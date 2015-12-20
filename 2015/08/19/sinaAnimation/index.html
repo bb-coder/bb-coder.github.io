@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>一句代码添加新浪弹出框动画. | Hongbo Bi’s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="新浪微博中的“加号按钮”点击后的弹出动画很有意思，每当一个人孤单寂寞冷的时候总会不停的点这个动画，终于忍不住自己撸了一个。废话不多说，直接上效果图：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一句代码添加新浪弹出框动画.">
+<meta property="og:url" content="http://bihongbo.com/2015/08/19/sinaAnimation/index.html">
+<meta property="og:site_name" content="Hongbo Bi’s Blog">
+<meta property="og:description" content="新浪微博中的“加号按钮”点击后的弹出动画很有意思，每当一个人孤单寂寞冷的时候总会不停的点这个动画，终于忍不住自己撸了一个。废话不多说，直接上效果图：">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation1.gif">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation3.png">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation4.png">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation5.png">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation6.png">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation7.png">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation8.png">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/threeballs.gif">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/jnwdemo.gif">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation2.gif">
+<meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation9.gif">
+<meta property="og:image" content="http://images.90159.com/icon/iOSDevTip.jpg">
+<meta property="og:updated_time" content="2015-12-20T05:00:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一句代码添加新浪弹出框动画.">
+<meta name="twitter:description" content="新浪微博中的“加号按钮”点击后的弹出动画很有意思，每当一个人孤单寂寞冷的时候总会不停的点这个动画，终于忍不住自己撸了一个。废话不多说，直接上效果图：">
+  
+  
+    <link rel="icon" href="css/images/logo.png">
+  
+  
+ <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600' rel='stylesheet' type='text/css'>
+ <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+
+
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css" type="text/css">
+  
+
+  
+
+  
+</head>
+<body>
+  <div id="container">
+    <header id="header">
+  <div id="header-main" class="header-inner">
+    <div class="outer">
+      <a href="/" id="logo"><i class="logo" style="background-image: url(/css/images/logo.png)"></i><span class="site-title">Hongbo Bi’s Blog</span></a>
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/.">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/categories">Categories</a>
+        
+          <a class="main-nav-link" href="/tags">Tags</a>
+        
+      </nav>
+      
+        <nav id="sub-nav">
+          <div class="profile" id="profile-nav">
+            <a id="profile-anchor" href="javascript:;"><img class="avatar" src="/css/images/avatar.png"><i class="fa fa-caret-down"></i></a>
+          </div>
+        </nav>
+      
+      <div id="search-form-wrap">
+        
+          <form class="search-form">
+            <input type="text" class="st-default-search-input search-form-input" placeholder="Search">
+            <button type="submit" class="search-form-submit"></button>
+          </form>
+        
+      </div>
+    </div>
+  </div>
+  <div id="main-nav-mobile" class="header-sub header-inner">
+    <table class="menu outer">
+      <tr>
+        
+          <td><a class="main-nav-link" href="/.">Home</a></td>
+        
+          <td><a class="main-nav-link" href="/archives">Archives</a></td>
+        
+          <td><a class="main-nav-link" href="/categories">Categories</a></td>
+        
+          <td><a class="main-nav-link" href="/tags">Tags</a></td>
+        
+        <td>
+          
+            <div class="search-form">
+              <input type="text" class="st-default-search-input search-form-input" placeholder="Search">
+            </div>
+          
+        </td>
+      </tr>
+    </table>
+  </div>
+</header>
+
+    <div class="outer">
+      
+        <aside id="profile">
+  <div class="inner profile-inner">
+    <div class="base-info profile-block">
+      <img id="avatar" src="/css/images/avatar.png">
+      <h2 id="name">毕洪博</h2>
+      <h3 id="title">‘iOS Developer &amp; Pop Arter’</h3>
+      <span id="location"><i class="fa fa-map-marker"></i>‘Beijing Chaoyang, China’</span>
+      <a id="follow" href="https://github.com/bb-coder">FOLLOW</a>
+    </div>
+    <div class="article-info profile-block">
+      <div class="article-info-block">
+        12
+        <span>posts</span>
+      </div>
+      <div class="article-info-block">
+        5
+        <span>tags</span>
+      </div>
+    </div>
+    
+    <div class="contact-info profile-block">
+      <table class="contact-list">
+        <tr>
+          
+          <td><a href="http://github.com/bb-coder" target="_blank" title="github"><i class="fa fa-github"></i></a></td>
+          
+          <td><a href="http://weibo.com/u/5578532822" target="_blank" title="weibo"><i class="fa fa-weibo"></i></a></td>
+          
+          <td><a href="https://twitter.com/HongboBi" target="_blank" title="twitter"><i class="fa fa-twitter"></i></a></td>
+          
+        </tr>
+      </table>
+    </div>
+    
+    
+  </div>
+</aside>
+
+      
+      <section id="main"><article id="post-sinaAnimation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一句代码添加新浪弹出框动画.
+    </h1>
+  
+
+        <div class="article-meta">
+          
+  <div class="article-date">
+    <i class="fa fa-calendar"></i>
+    <a href="/2015/08/19/sinaAnimation/">
+      <time datetime="2015-08-19T06:07:33.000Z" itemprop="datePublished">2015-08-19</time>
+    </a>
+  </div>
+
+
+          
+  <div class="article-category">
+  	<i class="fa fa-folder"></i>
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+                
+        <p>新浪微博中的“加号按钮”点击后的弹出动画很有意思，每当一个人孤单寂寞冷的时候总会不停的点这个动画，终于忍不住自己撸了一个。废话不多说，直接上效果图：<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation1.gif" alt="演示1"><br><a id="more"></a><br>首先说一下通过这个动画制作过程给大家分享的技术问题：<br>1.背景的毛玻璃效果<br>2.弹性动画<br>3.动画进行时对用户交互的处理<br>4.<code>UIControl</code> 的 <code>event</code> 类型</p>
+<h1 id="一、背景的毛玻璃效果">一、背景的毛玻璃效果</h1><p>对新浪微博中弹出动画背景的思路分析：</p>
+<p>  新浪的背景动画效果是有一个透明渐变的过程，并且最终渐变停止之后显示的是一个带有毛玻璃（半透明模糊）效果的视图。我的模仿思路是当准备要弹出动画的时候对整个视图进行截屏操作，将截屏后的图片进行毛玻璃效果渲染，然后在视图上加一个背景 <code>UIImageView</code> 来显示这张图片，然后通过 <code>alpha</code> 动画来由透明逐渐渐变出来。</p>
+<h2 id="1-对视图进行截屏：">1.对视图进行截屏：</h2><pre><code>UIGraphics BeginImageContextWithOptions(<span class="keyword">size</span>, NO, <span class="keyword">scale</span>);
+[view.layer renderInContext:UIGraphicsGetCurrentContext()];
+UIImage * <span class="keyword">image</span> = UIGraphicsGetImageFromCurrentImageContext();
+</code></pre><h2 id="2-截屏后加上毛玻璃效果：">2.截屏后加上毛玻璃效果：</h2><p>制作毛玻璃效果有三种选择，一是 <code>iOS8</code> 后推出的 <code>UIBlurEffect</code> 和 <code>UIVisualEffectView</code> 来直接显示一个带有毛玻璃效果的 <code>View</code> 不过这种方式并不能直接生成一张带有毛玻璃效果的图片，而且它的模糊程度设置方法非常有限只有那几个枚举类型，无法满足需求。</p>
+<p>第二种是通过 <code>CoreImage</code> 添加滤镜的方式来实现毛玻璃效果，不过这种方式有个缺点如果滤镜使用频繁会对主线程产生影响，如果我不断频繁的重复动画效果就必须要做判断看滤镜是否正在起作用，否则会经常出现崩溃和内存泄漏问题。</p>
+<p>第三种我们使用苹果13年 <code>WWDC</code> 上发布的官方 <code>sample</code> 一个 <code>UIImage</code> 的分类 <code>UIImage+ImageEffects.h</code> ,它不但可以制作毛玻璃效果图片，而且可以调整模糊程度和颜色渲染。下面给出代码：</p>
+<pre><code><span class="keyword">image</span> = [<span class="keyword">image</span> bhb_applyBlurWithRadius:<span class="number">15</span> 
+                             tintColor:tintColor 
+                 saturationDeltaFactor:<span class="number">1</span> 
+                             maskImage:nil];<span class="comment">//因为OC没有命名空间，避免你的程序中使用到了这个分类导致冲突，我加了前缀</span>
+</code></pre><p>最终的显示效果很不错，我将模糊程度尽量的调节到与新浪微博一致了，不过在这个过程中，我发现当我频繁的进行弹出操作时，内存会不断攀升如下图：<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation3.png" alt="演示3"><br>内存暴增的原因肯定是因为刚才的截图或者毛玻璃效果导致的，我们来用 <code>Instruments</code> 的 <code>Allocations</code> 来进行内存分析，找出元凶。<br>Xcode -&gt; Product -&gt; Profile -&gt; Allocations， 开启之后我们来使用右下角的 <code>Mark generation</code>（内存快照功能，进一步了解请移步<a href="http://www.ibm.com/developerworks/cn/mobile/mo-ios-memory/index.html" target="_blank" rel="external">这片文章</a>）<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation4.png" alt="演示4"><br>在弹出 <code>View</code> 和移除 <code>View</code> 的两个时间点加 <code>Mark generation</code>。<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation5.png" alt="演示5"><br>可以观察到，两个时间点竟然相差了4.31M，这是一个相当恐怖的数字，怪不得我点击几次弹出功能之后内存会暴增，让我们继续跟踪：<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation6.png" alt="演示6"><br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation7.png" alt="演示7"><br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation8.png" alt="演示8"><br>跟踪到最后，我们发现大部分未释放的内存来自于绘图和位图的创建，回想我们当初做的截图操作，图片上下文开启后并没有进行关闭操作，所以在程序不断截图的过程中开启了无数的图片上下文而且不会被释放，添加下面这句关键的代码就可以解决问题（NC的我竟然连这个都忘了加-.-）：</p>
+<pre><code><span class="type">UIGraphicsEndImageContext</span><span class="literal">()</span>;
+</code></pre><h1 id="二、弹性动画">二、弹性动画</h1><p>新浪动画中，按钮弹出的动画为弹性效果，按钮到达最终位置后不会直接停止，而是做类似弹簧的一种阻尼运动，要实现这种动画也很简单 <code>iOS7</code> 后苹果非常给力的添加了 <code>spring</code> 弹性动画的快速创建方式：</p>
+<pre><code><span class="collection">[UIView animateWithDuration:<span class="list">(<span class="keyword">NSTimeInterval</span>)</span> 
+                      delay:<span class="list">(<span class="keyword">NSTimeInterval</span>)</span> 
+     usingSpringWithDamping:<span class="list">(<span class="keyword">CGFloat</span>)</span> 
+      initialSpringVelocity:<span class="list">(<span class="keyword">CGFloat</span>)</span> 
+                    options:<span class="list">(<span class="keyword">UIViewAnimationOptions</span>)</span> 
+                 animations:<span class="comment">^{}</span> 
+                 completion:^<span class="list">(<span class="keyword">BOOL</span> finished)</span> <span class="collection">{}</span>]</span><span class="comment">;</span>
+</code></pre><p>通过对 <code>Damping</code> 阻力和 <code>Velocity</code> 初速度的设置可以实现弹性动画动画效果如下图：<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/threeballs.gif" alt="摘自MotionDesign"></p>
+<p>当然实现弹性动画还可以使用<a href="http://www.jwilling.com" target="_blank" rel="external">Jonathan Willing</a>大大的 <code>JNWSpringAnimation</code> ,你可以像使用 <code>CABasicAnimation</code> 一样轻松的使用它，通过改变关键的3个属性 <code>Damping</code> 阻力， <code>stiffness</code> 硬直, <code>mass</code> 质量来改变弹性动画的效果代码如下：</p>
+<pre><code>JNWSpringAnimation *<span class="built_in">scale</span> = [JNWSpringAnimation
+animationWithKeyPath:@<span class="string">"transform.translation.x"</span>];
+<span class="built_in">scale</span>.damping = <span class="number">7</span>;
+<span class="built_in">scale</span>.stiffness = <span class="number">7</span>;
+<span class="built_in">scale</span>.mass = <span class="number">1</span>;
+
+<span class="built_in">scale</span>.fromValue = @(<span class="number">0</span>);
+<span class="built_in">scale</span>.toValue = @(<span class="number">400</span>);
+
+[redBall.layer addAnimation:<span class="built_in">scale</span> forKey:<span class="built_in">scale</span>.keyPath];
+redBall.transform = CGAffineTransformMakeTranslation(<span class="number">400</span>, <span class="number">0</span>);
+</code></pre><p>关键的三个属性对动画的影响如下图：<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/jnwdemo.gif" alt="摘自MotionDesign"></p>
+<p>为了减轻项目对第三方框架的依赖，我使用了 <code>iOS7</code> 原生的 <code>spring</code> 动画，如果你想要兼容以前版本，替换成 <code>JNWSpringAnimation</code> 即可。回到新浪动画的制作，动画是6个按钮按照顺序依次出现和消失，并且点击 <code>more</code> 按钮后可以向左平移到第二屏幕，并且在第二屏幕点击 <code>叉号</code> 按钮动画会加在第二屏幕的6个按钮上。<br>效果如图：<br><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation2.gif" alt="演示2"></p>
+<p>对此我使用了一个 <code>UIScrollView</code> 来承载这些按钮，并声明2个数组用来保存所有的按钮和正在显示的按钮（在屏幕上，并且需要做动画）:</p>
+<pre><code><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">NSMutableArray</span> * visableArray;<span class="comment">//屏幕显示的按钮数组</span>
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">NSMutableArray</span> * itemsArray;<span class="comment">//所有按钮的数组</span>
+</code></pre><p>这样我在给这些按钮加动画的时候就不会浪费性能，只把动画加在当前显示在屏幕的按钮上。动画依次按照一定的时间差来执行，解决的办法我是用的 <code>GCD</code> :</p>
+<pre><code><span class="collection">[self.visableArray enumerateObjectsUsingBlock:^<span class="list">(<span class="keyword">id</span> obj, NSUInteger idx, BOOL *stop)</span> <span class="collection">{
+    BHBCustomBtn * btn = obj;
+    CGFloat x = btn.frame.origin.x;
+    CGFloat y = btn.frame.origin.y;
+    CGFloat width = btn.frame.size.width;
+    CGFloat height = btn.frame.size.height;
+    btn.frame = CGRectMake<span class="list">(<span class="keyword">x</span>, <span class="collection">[UIScreen mainScreen]</span>.bounds.size.height + y - self.frame.origin.y, width, height)</span><span class="comment">;</span>
+    btn.alpha = <span class="number">0.0</span><span class="comment">;</span>
+    dispatch_after<span class="list">(<span class="keyword">dispatch_time</span><span class="list">(<span class="keyword">DISPATCH_TIME_NOW</span>, <span class="list">(<span class="keyword">int64_t</span>)</span><span class="list">(<span class="keyword">idx</span> * <span class="number">0.03</span> * NSEC_PER_SEC)</span>)</span>, dispatch_get_main_queue<span class="list">()</span>, <span class="comment">^{
+        [UIView animateWithDuration:0.35 delay:0 usingSpringWithDamping:0.85 initialSpringVelocity:25 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            btn.alpha = 1;
+            btn.frame = CGRectMake(x, y, width, height);
+        }</span> completion:^<span class="list">(<span class="keyword">BOOL</span> finished)</span> <span class="collection">{
+            if <span class="list">(<span class="collection">[btn isEqual:<span class="collection">[self.visableArray lastObject]</span>]</span>)</span> <span class="collection">{
+                self.superview.superview.userInteractionEnabled = YES;
+            }</span>
+        }</span>]<span class="comment">;</span>
+    })</span><span class="comment">;</span>
+}</span>]</span><span class="comment">;</span>
+</code></pre><p>这样按钮就会依次以弹性动画的形式弹动出来了，是不是很简单，对于动画结束后所作的处理我将在下一节中说明。</p>
+<h1 id="三、动画进行时对用户交互的处理">三、动画进行时对用户交互的处理</h1><p>动画过程中，处理用户交互的问题相当关键，视图动画中默认自动停止响应用户交互，因此当按钮进行弹性动画时，触摸它并不会生成任何事件。<br>但是当你触摸加号按钮的时候，会再次进行弹出框动画，这时就会弹出两个弹出框，这是我们不希望看到的，我们可以将加号按钮的 <code>enable</code> 属性设置为 <code>YES</code> 但是这样做我们要在封装的视图内部获取外部的加号按钮，这一点违背了封装性原则，并不是一个好的设计。所以我在所有按钮的弹性动画开始时，设置：</p>
+<pre><code><span class="keyword">self</span><span class="variable">.superview</span><span class="variable">.superview</span><span class="variable">.userInteractionEnabled</span> = <span class="literal">NO</span>;
+</code></pre><p>注意视图的层级关系，我所设计的 <code>BHBPopView</code> 内部装着一个 <code>UIScrollView</code>，而它上面放着这些按钮，所以你要找到父视图的父视图才能够统一屏蔽用户的交互行为，当所有的按钮弹性动画结束时，也就是 <code>visableArray</code> 数组最后一个按钮动画结束时，我们恢复用户的交互：</p>
+<pre><code><span class="keyword">self</span><span class="variable">.superview</span><span class="variable">.superview</span><span class="variable">.userInteractionEnabled</span> = <span class="literal">YES</span>;
+</code></pre><p>这样当动画进行过程中，屏蔽了用户的交互，避免发生一些意外的情况。</p>
+<h1 id="四、UIControl_的_event_类型">四、<code>UIControl</code> 的 <code>event</code> 类型</h1><p>注意到新浪动画里面按钮有一个放大效果，并且当你手指放上去的时候放大，手指稍微挪动，便恢复原始大小。让我们先来看一下动画：</p>
+<p><img src="http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation9.gif" alt="演示9"></p>
+<p>要实现这个效果只需要做一个形变动画就可以了，关键是我们如何控制它放大和恢复大小。<br>思路如下：按钮是继承自 <code>UIControl</code> ，<code>UIControl</code> 有不同的事件状态：</p>
+<pre><code><span class="constant">UIControlEventTouchDown</span>           = <span class="number">1</span> &lt;&lt;  <span class="number">0</span>,      <span class="comment">// 手指落在按钮的一瞬间触发</span>
+<span class="constant">UIControlEventTouchDownRepeat</span>     = <span class="number">1</span> &lt;&lt;  <span class="number">1</span>,      <span class="comment">// 多点触碰的时候，当第二根以上的手指触摸瞬间出发</span>
+<span class="constant">UIControlEventTouchDragInside</span>     = <span class="number">1</span> &lt;&lt;  <span class="number">2</span>,      <span class="comment">// 手指在视图范围内拖动触发</span>
+<span class="constant">UIControlEventTouchDragOutside</span>    = <span class="number">1</span> &lt;&lt;  <span class="number">3</span>,      <span class="comment">// 手指在视图范围外拖动触发</span>
+<span class="constant">UIControlEventTouchDragEnter</span>      = <span class="number">1</span> &lt;&lt;  <span class="number">4</span>,      <span class="comment">// 手指从视图外拖动到视图内时触发</span>
+<span class="constant">UIControlEventTouchDragExit</span>       = <span class="number">1</span> &lt;&lt;  <span class="number">5</span>,      <span class="comment">// 手指从视图内部拖动到视图外时触发</span>
+<span class="constant">UIControlEventTouchUpInside</span>       = <span class="number">1</span> &lt;&lt;  <span class="number">6</span>,      <span class="comment">// 手指在视图内部抬起时触发</span>
+<span class="constant">UIControlEventTouchUpOutside</span>      = <span class="number">1</span> &lt;&lt;  <span class="number">7</span>,      <span class="comment">// 手指在视图外部抬起时触发</span>
+<span class="constant">UIControlEventTouchCancel</span>         = <span class="number">1</span> &lt;&lt;  <span class="number">8</span>,      <span class="comment">// 取消事件，放上了太多手指或者被上锁或者电话呼叫打断。</span>
+<span class="constant">
+UIControlEventValueChanged</span>        = <span class="number">1</span> &lt;&lt; <span class="number">12</span>,      <span class="comment">// 当视图的值发生改变时，发送通知。</span>
+<span class="constant">
+UIControlEventEditingDidBegin</span>     = <span class="number">1</span> &lt;&lt; <span class="number">16</span>,     <span class="comment">// UITextField</span>
+<span class="constant">UIControlEventEditingChanged</span>      = <span class="number">1</span> &lt;&lt; <span class="number">17</span>,
+<span class="constant">UIControlEventEditingDidEnd</span>       = <span class="number">1</span> &lt;&lt; <span class="number">18</span>,
+<span class="constant">UIControlEventEditingDidEndOnExit</span> = <span class="number">1</span> &lt;&lt; <span class="number">19</span>,     <span class="comment">// 'return key' ending editing</span>
+<span class="constant">
+UIControlEventAllTouchEvents</span>      = <span class="number">0</span>x00000FFF,  <span class="comment">// for touch events</span>
+<span class="constant">UIControlEventAllEditingEvents</span>    = <span class="number">0</span>x000F0000,  <span class="comment">// for UITextField</span>
+<span class="constant">UIControlEventApplicationReserved</span> = <span class="number">0</span>x0F000000,  <span class="comment">// range available for application use</span>
+<span class="constant">UIControlEventSystemReserved</span>      = <span class="number">0</span>xF0000000,  <span class="comment">// range reserved for internal framework use</span>
+<span class="constant">UIControlEventAllEvents</span>           = <span class="number">0</span>xFFFFFFFF
+</code></pre><p>我们所用到的事件是 <code>TouchDown</code> 和 <code>DragInside</code>，手指放上去触发 <code>TouchDown</code> 放大视图，在视图内部移动 <code>DragInside</code> 时恢复视图，注意按钮的作用范围是整个矩形区域包含了图片和文字，当你的手指移出图片的时候并非一定会移出按钮作用范围，所以依然会触发 <code>TouchUpInsite</code> 事件，这时候我们需要做一个属性来记录用户拖拽之后取消按钮的 <code>TouchUpInsite</code> 执行。</p>
+<pre><code><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">assign</span>) <span class="built_in">BOOL</span> btnCanceled;
+</code></pre><p>这样我们就可以实现动画效果了，具体代码如下：</p>
+<pre><code><span class="comment">//处理按钮有效的点击事件，当前按钮放大消失，其他按钮缩小消失，回调点击事件</span>
+[btn <span class="string">addTarget:</span>self <span class="string">action:</span><span class="annotation">@selector</span>(<span class="string">didClickBtn:</span>) <span class="string">forControlEvents:</span>UIControlEventTouchUpInside];
+<span class="comment">//处理手指按下事件，放大按钮</span>
+[btn <span class="string">addTarget:</span>self <span class="string">action:</span><span class="annotation">@selector</span>(<span class="string">didTouchBtn:</span>) <span class="string">forControlEvents:</span>UIControlEventTouchDown];
+<span class="comment">//处理手指拖动事件，恢复按钮大小</span>
+[btn <span class="string">addTarget:</span>self <span class="string">action:</span><span class="annotation">@selector</span>(<span class="string">didCancelBtn:</span>) <span class="string">forControlEvents:</span>UIControlEventTouchDragInside];
+</code></pre><h1 id="总结：">总结：</h1><p>制作类似新浪微博这种弹出框动画，我的思路是先分析逻辑，这些特效都由哪些组成，毛玻璃背景，加顶部一个 <code>logo</code> ，加中间 <code>UIScrollView</code>和上面的很多按钮,加底部工具条。研究透彻动画的执行顺序，动画执行结果有哪些分支。然后针对特效中的难点，比如毛玻璃，按钮弹性动画等等进行逐一研究攻破，最后将这些组件整合在一起变成一个好玩的动画，最后不要忘了动画的内存和性能测试。这次我模仿的新浪微博动画弹性效果并不是太理想，比起新浪原生来说不是特别一致，也希望有兴趣的你来给我一些建议优化它。最终在你的项目中加入我的弹出框动画真的只需要一句话哦：</p>
+<pre><code>/<span class="keyword">*</span><span class="keyword">*</span>
+<span class="keyword">*</span>  直接显示一个popView在某个view上
+<span class="keyword">*</span>
+<span class="keyword">*</span>  <span class="comment">@param view       父view</span>
+<span class="keyword">*</span>  <span class="comment">@param imageArray 图标数组</span>
+<span class="keyword">*</span>  <span class="comment">@param titles     标题数组</span>
+<span class="keyword">*</span>  <span class="comment">@param block      回调</span>
+<span class="keyword">*</span>  <span class="comment">@return pop视图</span>
+<span class="keyword">*</span>/
++ (BHB_INSTANCETYPE)showToView:(UIView <span class="keyword">*</span>)view andImages:(NSArray <span class="keyword">*</span>)imageArray andTitles:(NSArray <span class="keyword">*</span>)titles andSelectBlock:(DidSelectItemBlock)block;
+/<span class="keyword">*</span><span class="keyword">*</span>
+<span class="keyword">*</span>  如果显示一个带more功能的，请使用此方法
+<span class="keyword">*</span>
+<span class="keyword">*</span>  <span class="comment">@param view  父view</span>
+<span class="keyword">*</span>  <span class="comment">@param array BHBItem类型的集合</span>
+<span class="keyword">*</span>  <span class="comment">@param block 回调</span>
+<span class="keyword">*</span>  <span class="comment">@return pop视图</span>
+<span class="keyword">*</span>/
++ (BHB_INSTANCETYPE)showToView:(UIView <span class="keyword">*</span>)view withItems:(NSArray <span class="keyword">*</span>)array andSelectBlock:(DidSelectItemBlock)block;
+</code></pre><p>hexo出点问题修复到下半夜啊（升级到3.0太蛋疼了），现在脑子晕晕的，明天还要去新公司入职，动画中还有很多细节我不能一一分享了，欢迎大家来搞我的<a href="https://github.com/bb-coder/BHBPopView" target="_blank" rel="external">Demo</a></p>
+<p>good luck!</p>
+<p>版权声明：我已将本文在微信公众平台的发表权「独家代理」给 iOS开发（ iOSDevTip ） 微信公众号。扫下方二维码即可关注「iOS 开发」：</p>
+<p><img src="http://images.90159.com/icon/iOSDevTip.jpg" alt="iOSDevTip"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://bihongbo.com/2015/08/19/sinaAnimation/" data-id="ciienrtpc000n6y57qo9fb4ly" class="article-share-link">Share</a>
+      
+        <a href="http://bihongbo.com/2015/08/19/sinaAnimation/#ds-thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/07/16/copyProtocol/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">copy协议解析</div>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+
+  <section id="comments">
+    <div id="ds-thread" class="ds-thread" data-thread-key="http://bihongbo.com/2015/08/19/sinaAnimation/" data-title="一句代码添加新浪弹出框动画." data-url="http://bihongbo.com/2015/08/19/sinaAnimation/">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by DuoShuo.</a></noscript>
+      </div>
+  </section>
+
+</section>
+      
+        <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">recents</h3>
+    <div class="widget">
+      <ul id="recent-post" class="">
+        
+          <li>
+            
+            <div class="item-thumbnail">
+              <a href="/2015/08/19/sinaAnimation/" class="thumbnail">
+  
+    <span style="background-image:url(http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation1.gif
+)" alt="一句代码添加新浪弹出框动画." class="thumbnail-image"></span>
+  
+</a>
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+              <p class="item-title"><a href="/2015/08/19/sinaAnimation/" class="title">一句代码添加新浪弹出框动画.</a></p>
+              <p class="item-date"><time datetime="2015-08-19T06:07:33.000Z" itemprop="datePublished">2015-08-19</time></p>
+            </div>
+          </li>
+        
+          <li>
+            
+            <div class="item-thumbnail">
+              <a href="/2015/07/16/copyProtocol/" class="thumbnail">
+  
+    <span style="background-image:url(http://7xkdhe.com1.z0.glb.clouddn.com/copyImage1.png
+)" alt="copy协议解析" class="thumbnail-image"></span>
+  
+</a>
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+              <p class="item-title"><a href="/2015/07/16/copyProtocol/" class="title">copy协议解析</a></p>
+              <p class="item-date"><time datetime="2015-07-16T05:27:04.000Z" itemprop="datePublished">2015-07-16</time></p>
+            </div>
+          </li>
+        
+          <li>
+            
+            <div class="item-thumbnail">
+              <a href="/2014/11/15/swift5/" class="thumbnail">
+  
+    <span class="thumbnail-image thumbnail-none"></span>
+  
+</a>
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/swift/">swift</a></p>
+              <p class="item-title"><a href="/2014/11/15/swift5/" class="title">Swift Section Five(对象与类)</a></p>
+              <p class="item-date"><time datetime="2014-11-15T08:22:03.000Z" itemprop="datePublished">2014-11-15</time></p>
+            </div>
+          </li>
+        
+          <li>
+            
+            <div class="item-thumbnail">
+              <a href="/2014/10/23/swift4/" class="thumbnail">
+  
+    <span class="thumbnail-image thumbnail-none"></span>
+  
+</a>
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/swift/">swift</a></p>
+              <p class="item-title"><a href="/2014/10/23/swift4/" class="title">Swift Section Four(函数与闭包)</a></p>
+              <p class="item-date"><time datetime="2014-10-23T06:20:01.000Z" itemprop="datePublished">2014-10-23</time></p>
+            </div>
+          </li>
+        
+          <li>
+            
+            <div class="item-thumbnail">
+              <a href="/2014/10/20/swift3/" class="thumbnail">
+  
+    <span class="thumbnail-image thumbnail-none"></span>
+  
+</a>
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/swift/">swift</a></p>
+              <p class="item-title"><a href="/2014/10/20/swift3/" class="title">Swift Section Three(分支和循环)</a></p>
+              <p class="item-date"><time datetime="2014-10-20T05:11:05.000Z" itemprop="datePublished">2014-10-20</time></p>
+            </div>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/swift/">swift</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UILabel/">UILabel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/">swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文字排版/">文字排版</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">tag cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/UILabel/" style="font-size: 10px;">UILabel</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/swift/" style="font-size: 20px;">swift</a> <a href="/tags/文字排版/" style="font-size: 10px;">文字排版</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+  <div id="toTop" class="fa fa-chevron-up"></div>
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2011 - 2015 毕洪博<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+    </div>
+  </div>
+</footer>
+    
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"HongboBi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+  <script type="text/javascript">
+    (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+    })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+    _st('install','PtetYTqdvpkd9wh99uMx','2.0.0');
+  </script>
+
+
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
