@@ -1,4 +1,12 @@
 (function($){
+
+  var _hmt = _hmt || [];
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?776f9edd77a46a651e8f90731d62cb0f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+
+
   var toTop = $('#toTop').length ? $('#toTop').offset().top - $(window).height() + 20 : 0;
 
   // Share
