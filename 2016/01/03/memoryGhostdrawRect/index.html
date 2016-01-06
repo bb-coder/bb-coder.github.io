@@ -18,7 +18,7 @@
 <meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/drawRect3.001.png">
 <meta property="og:image" content="http://7xkdhe.com1.z0.glb.clouddn.com/drawRect4.gif">
 <meta property="og:image" content="http://blog.devtang.com/images/weixin-qr.jpg">
-<meta property="og:updated_time" content="2016-01-06T06:01:13.000Z">
+<meta property="og:updated_time" content="2016-01-06T06:13:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="内存恶鬼drawRect">
 <meta name="twitter:description" content="标题有点吓人，但是对于drawRect的评价倒是一点都不过分。在平日的开发中，随意覆盖drawRect方法，稍有不慎就会让你的程序内存暴增。下面我们来看一个例子。
@@ -205,7 +205,7 @@
 <p>在每一个<code>UIView</code>实例当中，都有一个默认的支持图层，<code>UIView</code>负责创建并且管理这个图层。实际上<strong>这个<code>CALayer</code>图层才是真正用来在屏幕上显示的</strong>，<code>UIView</code>仅仅是对它的一层封装，实现了<code>CALayer</code>的<code>delegate</code>，提供了处理事件交互的具体功能，还有动画底层方法的高级API。</p>
 <p>可以说<code>CALayer</code>是<code>UIView</code>的内部实现细节。</p>
 <p>脑补了这么多，它与今天的主题<code>drawRect</code>有何关系呢？别着急，我们既然已经确定<code>CALayer</code>才是最终显示到屏幕上的，只要顺藤摸瓜，即可分析清楚。<code>CALayer</code>其实也只是<code>iOS</code>当中一个普通的类，它也并不能直接渲染到屏幕上，因为屏幕上你所看到的东西，其实都是一张张图片。而为什么我们能看到<code>CALayer</code>的内容呢，是因为<code>CALayer</code>内部有一个<code>contents</code>属性。<code>contents</code>默认可以传一个<code>id</code>类型的对象，但是只有你传<code>CGImage</code>的时候，它才能够正常显示在屏幕上。<strong>所以最终我们的图形渲染落点落在<code>contents</code>身上</strong>如图。</p>
-<p><img src="http://7xkdhe.com1.z0.glb.clouddn.com/drawRect3.001.png" alt="效果图3"></p>
+<p><img src="http://7xkdhe.com1.z0.glb.clouddn.com/drawRect3.001.png" alt="效果图2"></p>
 <p><code>contents</code>也被称为寄宿图，除了给它赋值<code>CGImage</code>之外，我们也可以直接对它进行绘制，绘制的方法正是这次问题的关键，通过继承<code>UIView</code>并实现<code>-drawRect:</code>方法即可自定义绘制。<code>-drawRect:</code> 方法没有默认的实现，因为对<code>UIView</code>来说，寄宿图并不是必须的，<code>UIView</code>不关心绘制的内容。如果<code>UIView</code>检测到<code>-drawRect:</code>方法被调用了，它就会为视图分配一个寄宿图，这个寄宿图的像素尺寸等于视图大小乘以<code>contentsScale</code>(这个属性与屏幕分辨率有关，我们的画板程序在不同模拟器下呈现的内存用量不同也是因为它)的值。</p>
 <p>那么回到我们的画板程序，当画板从屏幕上出现的时候，因为重写了<code>-drawRect:</code>方法，<code>-drawRect :</code>方法就会自动调用。<strong>生成一张寄宿图</strong>后，方法里面的代码利用<code>Core Graphics</code>去绘制n条黑色的线，然后内容就会缓存起来，等待下次你调用<code>-setNeedsDisplay</code>时再进行更新。</p>
 <p>画板视图的<code>-drawRect:</code>方法的背后实际上都是底层的<code>CALayer</code>进行了重绘和保存中间产生的图片，<code>CALayer</code>的<code>delegate</code>属性默认实现了<code>CALayerDelegate</code>协议，当它需要内容信息的时候会调用协议中的方法来拿。当画板视图重绘时，因为它的支持图层<code>CALayer</code>的代理就是画板视图本身，所以支持图层会请求画板视图给它一个寄宿图来显示，它此刻会调用：</p>
@@ -225,7 +225,7 @@
 <li>不会出现像素化。</li>
 </ul>
 <p>所以最终我们的画板程序使用<code>CAShapeLayer</code>来实现线条的绘制，性能非常稳定，效果图如下：</p>
-<p><img src="http://7xkdhe.com1.z0.glb.clouddn.com/drawRect4.gif" alt="效果图4"></p>
+<p><img src="http://7xkdhe.com1.z0.glb.clouddn.com/drawRect4.gif" alt="效果图3"></p>
 <p>总结一下绘制性能优化原则：</p>
 <ul>
 <li>1.绘制图形性能的优化最好的办法就是不去绘制。</li>
@@ -246,7 +246,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://bihongbo.com/2016/01/03/memoryGhostdrawRect/" data-id="cij2f7r4x000smyfy3urhezzz" class="article-share-link">Share</a>
+      <a data-url="http://bihongbo.com/2016/01/03/memoryGhostdrawRect/" data-id="cij2fj0xz000sozfyb95dgkr7" class="article-share-link">Share</a>
       
         <a href="http://bihongbo.com/2016/01/03/memoryGhostdrawRect/#disqus_thread" class="article-comment-link">Comments</a>
       
