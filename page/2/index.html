@@ -102,7 +102,7 @@
     </div>
     <div class="article-info profile-block">
       <div class="article-info-block">
-        13
+        14
         <span>posts</span>
       </div>
       <div class="article-info-block">
@@ -131,6 +131,226 @@
 
       
       <section id="main">
+      <article id="post-swift4" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/23/swift4/">Swift Section Four(函数与闭包)</a>
+    </h1>
+  
+
+        <div class="article-meta">
+          
+  <div class="article-date">
+    <i class="fa fa-calendar"></i>
+    <a href="/2014/10/23/swift4/">
+      <time datetime="2014-10-23T06:20:01.000Z" itemprop="datePublished">2014-10-23</time>
+    </a>
+  </div>
+
+
+          
+  <div class="article-category">
+  	<i class="fa fa-folder"></i>
+    <a class="article-category-link" href="/categories/swift/">swift</a>
+  </div>
+
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+                
+        <h1 id="函数与闭包">函数与闭包</h1><hr>
+<pre><code><span class="comment">//: Playground - noun: a place where people can play</span>
+
+<span class="keyword">import</span> <span class="type">UIKit</span>
+
+<span class="comment">//swift 第四课 函数与闭包</span>
+
+<span class="comment">//1.函数的用法</span>
+<span class="func"><span class="keyword">func</span> <span class="title">greet</span><span class="params">(name: String, day: String)</span> -&gt;<span class="title">String</span> </span>{
+
+<span class="keyword">return</span> <span class="string">"Hello <span class="subst">\(name)</span>, today is <span class="subst">\(day)</span>"</span>
+
+}
+
+greet(<span class="string">"Bob"</span>,<span class="string">"Tuesday"</span>)
+
+
+<span class="comment">//2.多返回值的函数</span>
+<span class="func"><span class="keyword">func</span> <span class="title">calculateStatistics</span><span class="params">(scores: [Int])</span> -&gt;<span class="params">(<span class="built_in">min</span>: Int, <span class="built_in">max</span>: Int, sum: Int)</span></span>{
+
+<span class="keyword">var</span> <span class="built_in">min</span> = scores[<span class="number">0</span>]
+
+<span class="keyword">var</span> <span class="built_in">max</span> = scores[<span class="number">0</span>]
+
+<span class="keyword">var</span> sum = <span class="number">0</span>
+
+<span class="keyword">for</span> score <span class="keyword">in</span> scores{
+
+<span class="keyword">if</span> score &gt; <span class="built_in">max</span> {
+
+<span class="built_in">max</span> = score
+
+}<span class="keyword">else</span> <span class="keyword">if</span> score &lt; <span class="built_in">min</span>{
+
+<span class="built_in">min</span> = score
+
+}
+
+sum += score
+
+}
+
+<span class="keyword">return</span> (<span class="built_in">min</span>, <span class="built_in">max</span>, sum)
+
+}
+
+<span class="keyword">let</span> statistics = calculateStatistics([<span class="number">5</span>, <span class="number">3</span>, <span class="number">100</span>, <span class="number">3</span>, <span class="number">9</span>])
+
+<span class="built_in">print</span>(statistics.sum)
+
+<span class="built_in">print</span>(statistics.<span class="number">2</span>)
+
+<span class="comment">//3.不限参数个数的函数</span>
+<span class="func"><span class="keyword">func</span> <span class="title">sumOf</span><span class="params">(numbers: Int...)</span> -&gt; <span class="title">Int</span> </span>{
+
+<span class="keyword">var</span> sum = <span class="number">0</span>
+
+<span class="keyword">for</span> number <span class="keyword">in</span> numbers{
+
+sum += number
+
+}
+
+<span class="keyword">return</span> sum
+
+}
+
+sumOf()
+
+sumOf(<span class="number">42</span>, <span class="number">597</span>, <span class="number">12</span>)
+
+<span class="comment">//4.嵌套函数</span>
+<span class="func"><span class="keyword">func</span> <span class="title">returnFifteen</span><span class="params">()</span> -&gt; <span class="title">Int</span></span>{
+
+<span class="keyword">var</span> y = <span class="number">10</span>
+
+<span class="func"><span class="keyword">func</span> <span class="title">add</span><span class="params">()</span></span>{
+
+y += <span class="number">5</span>
+
+}
+
+add()
+
+<span class="keyword">return</span> y
+
+}
+
+returnFifteen()
+
+<span class="comment">//5.函数可以作为函数的返回值</span>
+<span class="func"><span class="keyword">func</span> <span class="title">makeIncrementer</span><span class="params">()</span> -&gt; <span class="params">(Int -&gt; Int)</span></span>{
+
+<span class="func"><span class="keyword">func</span> <span class="title">addOne</span><span class="params">(number: Int)</span> -&gt; <span class="title">Int</span> </span>{
+
+<span class="keyword">return</span> <span class="number">1</span> + number
+
+}
+
+<span class="keyword">return</span> addOne
+
+}
+
+<span class="keyword">var</span> increment = makeIncrementer()
+
+increment(<span class="number">7</span>)
+
+<span class="comment">//5.函数也可以作为函数的参数</span>
+<span class="func"><span class="keyword">func</span> <span class="title">hasAnyMatches</span><span class="params">(list: [Int], condition: Int -&gt; Bool)</span> -&gt; <span class="title">Bool</span> </span>{
+
+<span class="keyword">for</span> item <span class="keyword">in</span> list {
+
+<span class="keyword">if</span> condition(item) {
+
+<span class="keyword">return</span> <span class="built_in">true</span>
+
+}
+
+}
+
+<span class="keyword">return</span> <span class="built_in">false</span>
+
+}
+
+<span class="func"><span class="keyword">func</span> <span class="title">lessThanTen</span> <span class="params">(number: Int)</span> -&gt; <span class="title">Bool</span> </span>{
+
+<span class="keyword">return</span> number &lt; <span class="number">10</span>
+
+}
+
+<span class="keyword">var</span> numbers = [<span class="number">20</span>, <span class="number">19</span>, <span class="number">5</span>, <span class="number">12</span>]
+
+hasAnyMatches(numbers, lessThanTen)
+
+
+<span class="comment">//6.闭包的使用</span>
+<span class="comment">//首先介绍一下map方法的定义：返回一个数组，这个数组内的元素是原数组经过闭包函数计算返回的值</span>
+
+numbers.<span class="built_in">map</span>({
+
+(number: <span class="type">Int</span>) -&gt; <span class="type">Int</span> <span class="keyword">in</span>
+
+<span class="keyword">let</span> result = <span class="number">3</span> * number
+
+<span class="keyword">return</span> result
+
+})
+
+<span class="comment">//简写方式</span>
+<span class="keyword">let</span> mappedNumbers = numbers.<span class="built_in">map</span>({
+
+number <span class="keyword">in</span> <span class="number">3</span> * number
+
+})
+
+<span class="built_in">print</span>(mappedNumbers)
+
+<span class="comment">//利用闭包排序</span>
+<span class="keyword">let</span> sortedNumbers = numbers.sorted {
+
+$<span class="number">0</span> &gt; $<span class="number">1</span>
+
+}
+
+<span class="built_in">print</span>(sortedNumbers)
+</code></pre><p>源代码请前往<a href="https://github.com/bb-coder/swift_Session" target="_blank" rel="external">我的github</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://bihongbo.com/2014/10/23/swift4/" data-id="cij8wlxog000bg457a2sr0epf" class="article-share-link">Share</a>
+      
+        <a href="http://bihongbo.com/2014/10/23/swift4/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/">swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+    
       <article id="post-swift3" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -321,7 +541,7 @@ secondForLoop += i
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://bihongbo.com/2014/10/20/swift3/" data-id="cij2fj0xp000eozfyh8z3x3th" class="article-share-link">Share</a>
+      <a data-url="http://bihongbo.com/2014/10/20/swift3/" data-id="cij8wlxoi000eg457csf4gjb3" class="article-share-link">Share</a>
       
         <a href="http://bihongbo.com/2014/10/20/swift3/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -410,7 +630,7 @@ occupations = [:]
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://bihongbo.com/2014/09/15/swift2/" data-id="cij2fj0xr000hozfymvcjifpk" class="article-share-link">Share</a>
+      <a data-url="http://bihongbo.com/2014/09/15/swift2/" data-id="cij8wlxok000hg457zyvikzuj" class="article-share-link">Share</a>
       
         <a href="http://bihongbo.com/2014/09/15/swift2/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -469,7 +689,7 @@ occupations = [:]
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://bihongbo.com/2014/08/17/swift1/" data-id="cij2fj0xt000kozfyvq672xqt" class="article-share-link">Share</a>
+      <a data-url="http://bihongbo.com/2014/08/17/swift1/" data-id="cij8wlxom000kg457762jigva" class="article-share-link">Share</a>
       
         <a href="http://bihongbo.com/2014/08/17/swift1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -533,71 +753,12 @@ let date = dateFormatter.<span class="function"><span class="title">dateFromStri
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://bihongbo.com/2014/07/25/swiftdatequestion/" data-id="cij2fj0xa0003ozfyzqhlttub" class="article-share-link">Share</a>
+      <a data-url="http://bihongbo.com/2014/07/25/swiftdatequestion/" data-id="cij8wlxo40003g457oyjjg644" class="article-share-link">Share</a>
       
         <a href="http://bihongbo.com/2014/07/25/swiftdatequestion/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/">swift</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-    
-      <article id="post-UILabelnsmutableattributeStr" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/13/UILabelnsmutableattributeStr/">UILabel的文字排版特效，删除线，下划线等</a>
-    </h1>
-  
-
-        <div class="article-meta">
-          
-  <div class="article-date">
-    <i class="fa fa-calendar"></i>
-    <a href="/2014/06/13/UILabelnsmutableattributeStr/">
-      <time datetime="2014-06-13T07:46:21.000Z" itemprop="datePublished">2014-06-13</time>
-    </a>
-  </div>
-
-
-          
-  <div class="article-category">
-  	<i class="fa fa-folder"></i>
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-        </div>
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-                
-        <h2 id="首先要做文字排版的特效，需要用到_iOS_系统自带的一个_Foundation_框架下的_NSMutableAttributeString_-步骤如下：">首先要做文字排版的特效，需要用到 <code>iOS</code> 系统自带的一个 <code>Foundation</code> 框架下的 <code>NSMutableAttributeString</code> .步骤如下：</h2><h3 id="1-创建属性字串">1.创建属性字串</h3><pre><code><span class="tag">var</span> mAttributeStr:NSMutableAttributedString = <span class="function"><span class="title">NSMutableAttributedString</span><span class="params">(string: <span class="string">"$¥12345"</span>)</span></span>
-</code></pre><h3 id="2-添加属性">2.添加属性</h3><pre><code>mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName,   <span class="string">value:</span>NSUnderlineStyle.StyleSingle.rawValue, <span class="string">range:</span>     NSRange(<span class="string">location:</span> <span class="number">2</span>, <span class="string">length:</span> <span class="number">5</span>))
-mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="string">value:</span>NSUnderlineStyle.StyleNone.rawValue, <span class="string">range:</span> NSRange(<span class="string">location:</span> <span class="number">0</span>, <span class="string">length:</span> <span class="number">2</span>))
-</code></pre><h3 id="3-赋值给UILabel">3.赋值给UILabel</h3><pre><code>strikedLabel<span class="class">.attributedText</span> = mAttributeStr
-</code></pre><h2 id="简单3步就创建好了字符串的删除线效果，更多效果请参考我的demo-">简单3步就创建好了字符串的删除线效果，更多效果请参考<a href="https://github.com/bb-coder/swift_add_strikethrough" target="_blank" rel="external">我的demo</a>.</h2><hr>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://bihongbo.com/2014/06/13/UILabelnsmutableattributeStr/" data-id="cij2fj0yb0013ozfyn6cvoefv" class="article-share-link">Share</a>
-      
-        <a href="http://bihongbo.com/2014/06/13/UILabelnsmutableattributeStr/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UILabel/">UILabel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/文字排版/">文字排版</a></li></ul>
 
     </footer>
   </div>
@@ -619,6 +780,24 @@ mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="strin
     <h3 class="widget-title">recents</h3>
     <div class="widget">
       <ul id="recent-post" class="">
+        
+          <li>
+            
+            <div class="item-thumbnail">
+              <a href="/2016/01/11/memoryGhostMore/" class="thumbnail">
+  
+    <span style="background-image:url(http://7xkdhe.com1.z0.glb.clouddn.com/boke201.jpeg
+)" alt="内存恶鬼drawRect（续）" class="thumbnail-image"></span>
+  
+</a>
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+              <p class="item-title"><a href="/2016/01/11/memoryGhostMore/" class="title">内存恶鬼drawRect（续）</a></p>
+              <p class="item-date"><time datetime="2016-01-10T19:00:10.000Z" itemprop="datePublished">2016-01-11</time></p>
+            </div>
+          </li>
         
           <li>
             
@@ -691,23 +870,6 @@ mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="strin
             </div>
           </li>
         
-          <li>
-            
-            <div class="item-thumbnail">
-              <a href="/2014/10/23/swift4/" class="thumbnail">
-  
-    <span class="thumbnail-image thumbnail-none"></span>
-  
-</a>
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category"><a class="article-category-link" href="/categories/swift/">swift</a></p>
-              <p class="item-title"><a href="/2014/10/23/swift4/" class="title">Swift Section Four(函数与闭包)</a></p>
-              <p class="item-date"><time datetime="2014-10-23T06:20:01.000Z" itemprop="datePublished">2014-10-23</time></p>
-            </div>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -717,7 +879,7 @@ mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="strin
   <div class="widget-wrap">
     <h3 class="widget-title">categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/swift/">swift</a><span class="category-list-count">6</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/swift/">swift</a><span class="category-list-count">6</span></li></ul>
     </div>
   </div>
 
@@ -726,7 +888,7 @@ mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="strin
   <div class="widget-wrap">
     <h3 class="widget-title">tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UILabel/">UILabel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/">swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文字排版/">文字排版</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/UILabel/">UILabel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/">swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文字排版/">文字排版</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -735,7 +897,7 @@ mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="strin
   <div class="widget-wrap">
     <h3 class="widget-title">tag cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/UILabel/" style="font-size: 10px;">UILabel</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/swift/" style="font-size: 20px;">swift</a> <a href="/tags/文字排版/" style="font-size: 10px;">文字排版</a>
+      <a href="/tags/UILabel/" style="font-size: 10px;">UILabel</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/swift/" style="font-size: 15px;">swift</a> <a href="/tags/文字排版/" style="font-size: 10px;">文字排版</a>
     </div>
   </div>
 
@@ -744,7 +906,7 @@ mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, <span class="strin
   <div class="widget-wrap">
     <h3 class="widget-title">archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
