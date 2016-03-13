@@ -1,0 +1,1278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Hongbo Bi’s Blog</title>
+  <subtitle>Stay hungry,stay foolish</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://bihongbo.com/"/>
+  <updated>2016-01-10T19:15:30.000Z</updated>
+  <id>http://bihongbo.com/</id>
+  
+  <author>
+    <name>毕洪博</name>
+    <email>bbcoderios@gmail.com</email>
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>内存恶鬼drawRect（续:答疑篇）</title>
+    <link href="http://bihongbo.com/2016/01/11/memoryGhostMore/"/>
+    <id>http://bihongbo.com/2016/01/11/memoryGhostMore/</id>
+    <published>2016-01-10T19:00:10.000Z</published>
+    <updated>2016-01-10T19:15:30.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;致谢&quot;&gt;致谢&lt;/h3&gt;&lt;p&gt;首先我没有想到前几天写的文章（&lt;a href=&quot;http://bihongbo.com/2016/01/03/memoryGhostdrawRect/&quot;&gt;内存恶鬼drawRect&lt;/a&gt;）会有这么多人关注，感谢大家的各种肯定和建议，谢谢大家。另外感谢&lt;a href=&quot;http://weibo.com/tangqiaoboy&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@唐巧&lt;/a&gt;在公众号上发布本文，还要感谢各位同学的转发分享。&lt;/p&gt;
+&lt;h3 id=&quot;答疑&quot;&gt;答疑&lt;/h3&gt;&lt;p&gt;我的这篇拙作是因为同事辉哥的离职让我想起来去把当初和他解决的比较有意思的问题梳理总结一下，写的并不甚完美，通过公众号的回复和微博的回复私信等等，我收集了读者大大们的问题，对这些问题我会以我的能力一一尝试解答，如果有错误的地方还请不吝指出。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h4 id=&quot;1-内存没有问题啊，为什么我们的代码内存不会暴增？&quot;&gt;1.内存没有问题啊，为什么我们的代码内存不会暴增？&lt;/h4&gt;&lt;p&gt;首先检讨一下，我在原文当中第一个内存暴增例子可能过于简单不够详尽。其实内存的增长与绘图视图的大小和屏幕分辨率有直接关系，你可以尝试将视图范围扩大，并且使用iPhone 6 Plus或者Ipad等高分辨率机型进行测试。由于我们的绘图程序支持两只手指拖动绘图版(很多人忽略了这个功能，导致很多内容存在误解，建议大家用真机玩一下这个功能)，实际的绘图区域要比屏幕大出很多倍，所以内存增长特别明显，这也是我们对&lt;code&gt;drawRect&lt;/code&gt;使用不好的例子，如果你使用的相当谨慎，内存是不会有很严重的问题(也许只有几MB)，但是我们有能力去优化它，就应该尽量让它运行的更好！另外我在&lt;code&gt;github&lt;/code&gt;上的&lt;code&gt;BHBDrawBorderDemo&lt;/code&gt;仓库上传了一个比较明显的暴增例子，使用&lt;code&gt;drawRect&lt;/code&gt;和&lt;code&gt;CAShapeLayer&lt;/code&gt;的代码都有，&lt;code&gt;demo&lt;/code&gt;很简单就是弹出一个视图，在这个视图上画2个矩形如下图，你可以在调试的时候非常方便的切换,代码&lt;a href=&quot;https://github.com/bb-coder/BHBDrawBoarderDemo/tree/master/DrawBorderBugDemo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;戳这里&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/boke201.jpeg&quot; alt=&quot;效果图0&quot;&gt;&lt;/p&gt;
+&lt;p&gt;另外下面这张图是我自己在不同机型两种方案的对比结果（对比的对象只是屏幕大小的视图，我们的绘图程序会达到300M的内存是因为视图的大小是屏幕的好多倍），你可以亲自拿我的&lt;a href=&quot;https://github.com/bb-coder/BHBDrawBoarderDemo/tree/master/DrawBorderBugDemo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Demo&lt;/a&gt;试试。&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/boke2.jpeg&quot; alt=&quot;效果图1&quot;&gt;&lt;/p&gt;
+&lt;h4 id=&quot;2-drawRect里面加上super调用行不行？&quot;&gt;2.drawRect里面加上super调用行不行？&lt;/h4&gt;&lt;p&gt;这个问题我实在不想解释，但是又怕有人误解，只好提一下。&lt;/p&gt;
+&lt;p&gt;同学，苹果官方文档是这样说的:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;If you subclass UIView directly, your implementation of this method does not need to call super.&lt;/strong&gt;&lt;/p&gt;
+&lt;h4 id=&quot;3-无所谓啊，其实没那么大影响，谈不上什么恶鬼！&quot;&gt;3.无所谓啊，其实没那么大影响，谈不上什么恶鬼！&lt;/h4&gt;&lt;p&gt;好吧，其实我看见这样的回复的时候我就知道，你肯定是个大牛，可是还是有很多人特别是新人一开始并不会注意到这一点，他们可能没有类似的经验去保持警惕。我把标题定的这么吓人也是想给新人朋友们提个醒，&lt;code&gt;drawRect&lt;/code&gt;用的时候要注意下内存问题。另外我也没有说过让大家弃用&lt;code&gt;drawRect&lt;/code&gt;,我在文章结尾处已经明确说了，原则是尽量不去绘制，如果不能避免，要尽可能的减小绘制的范围，系统虽然会帮你创建比较合适的范围，也就是说不一定你创建多大的视图，图形上下文就有多大。但是别忘了，只要你设置一下背景颜色，布满&lt;code&gt;view&lt;/code&gt;的寄宿图就会让你的图形上下文占用内存达到峰值。&lt;/p&gt;
+&lt;h4 id=&quot;4-drawRect一般在什么场景下用？&quot;&gt;4.drawRect一般在什么场景下用？&lt;/h4&gt;&lt;p&gt;其实与问题3一样，尽量别用它，你可以试试我的&lt;a href=&quot;https://github.com/bb-coder/BHBDrawBoarderDemo/tree/master/DrawBorderBugDemo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Demo&lt;/a&gt;，就算你在里面什么都不画，它也会占用内存，而且这个内存量还不少。所以，你即使优化的再好，也不如不去绘制。当然了，很多需求用专有图层替代也很麻烦，如果影响不大，而且你对内存的把握很高或者不在乎，你可以直接使用&lt;code&gt;drawRect&lt;/code&gt;。&lt;/p&gt;
+&lt;h4 id=&quot;5-drawRect可以用算法来优化，CAShapeLayer性能也不是最优的。&quot;&gt;5.&lt;code&gt;drawRect&lt;/code&gt;可以用算法来优化，&lt;code&gt;CAShapeLayer&lt;/code&gt;性能也不是最优的。&lt;/h4&gt;&lt;p&gt;首先感谢两位朋友的指教，恕笔者才疏学浅，笔者回头查了很久也没有查到相关的资料或者博客，比&lt;code&gt;CAShapeLayer&lt;/code&gt;性能还要好的我也就能想到OpenGLES也不知道对不对，比较好奇，如果不忙加我微博&lt;a href=&quot;http://weibo.com/u/5578532822?is_all=1&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@毕洪博&lt;/a&gt;咱们联系讨论一下～～&lt;/p&gt;
+&lt;h4 id=&quot;6-appending…&quot;&gt;6.appending…&lt;/h4&gt;&lt;p&gt;主要的问题就这么多，本文会持续更新，只要有问题我就会追加上来，大家如果有好的优化思路赶紧告知我呀～也欢迎各路神通广大之人来调戏我！！！流氓这么少～～哎，天色已晚，睡了…&lt;/p&gt;
+&lt;p&gt;good luck!&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;致谢&quot;&gt;致谢&lt;/h3&gt;&lt;p&gt;首先我没有想到前几天写的文章（&lt;a href=&quot;http://bihongbo.com/2016/01/03/memoryGhostdrawRect/&quot;&gt;内存恶鬼drawRect&lt;/a&gt;）会有这么多人关注，感谢大家的各种肯定和建议，谢谢大家。另外感谢&lt;a href=&quot;http://weibo.com/tangqiaoboy&quot;&gt;@唐巧&lt;/a&gt;在公众号上发布本文，还要感谢各位同学的转发分享。&lt;/p&gt;
+&lt;h3 id=&quot;答疑&quot;&gt;答疑&lt;/h3&gt;&lt;p&gt;我的这篇拙作是因为同事辉哥的离职让我想起来去把当初和他解决的比较有意思的问题梳理总结一下，写的并不甚完美，通过公众号的回复和微博的回复私信等等，我收集了读者大大们的问题，对这些问题我会以我的能力一一尝试解答，如果有错误的地方还请不吝指出。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>内存恶鬼drawRect</title>
+    <link href="http://bihongbo.com/2016/01/03/memoryGhostdrawRect/"/>
+    <id>http://bihongbo.com/2016/01/03/memoryGhostdrawRect/</id>
+    <published>2016-01-03T07:26:13.000Z</published>
+    <updated>2016-01-10T19:06:28.000Z</updated>
+    
+    <content type="html">&lt;p&gt;标题有点吓人，但是对于&lt;code&gt;drawRect&lt;/code&gt;的评价倒是一点都不过分。在平日的开发中，随意覆盖&lt;code&gt;drawRect&lt;/code&gt;方法，稍有不慎就会让你的程序内存暴增。下面我们来看一个例子。&lt;/p&gt;
+&lt;p&gt;去年的某天午后，北京的雾霾依旧像现在这样醇厚，我的同事辉哥像往常一样与我楼下约烟。我见辉哥表情凝重，便询问究竟。辉哥做了一个画板功能，但是苦于内存问题一直得不到解决。画板功能很简单，就是记录手指触摸的轨迹然后绘制在屏幕上。下面我们来看一张效果图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/drawRect.gif&quot; alt=&quot;效果图&quot;&gt;&lt;/p&gt;
+&lt;p&gt;如图我们看到左侧内存的状况随着手指的绘制逐渐恶化。另外细心的同学可以观察到，点击图中蓝色矩形按钮之后，便会弹出画板，而这时并没有进行任何的手指绘制，内存就突变为&lt;code&gt;114MB&lt;/code&gt;，然后每当手指绘制开始时，内存立即增加到&lt;code&gt;300MB&lt;/code&gt;左右稳定下来。对于正常的&lt;code&gt;iOS App&lt;/code&gt;来讲，这么大的内存消耗是不能容忍的。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;下面分析一下原因：&lt;br&gt;可能的原因有两个，一是在手指绘制的过程中创建的大量点对象没有及时释放或者其他资源没有及时释放。&lt;br&gt;二是系统在绘制的过程中开始大量消耗内存。&lt;/p&gt;
+&lt;p&gt;第一个原因，手指绘制的过程中创建的大量点对象没有及时释放或者其他资源没有及时释放。这一点我们暂时排除以节省时间，因为这个画板功能工程是用&lt;code&gt;ARC&lt;/code&gt;写的，并且我们已经做过代码检查和使用&lt;code&gt;Instruments&lt;/code&gt;工具来检测内存使用情况，这里并没有所谓的对象没有及时释放的问题存在。&lt;/p&gt;
+&lt;p&gt;第二个原因，系统在绘制的过程中开始大量消耗内存。首先我们曾经注意到一个诡异并且不寻常的事情就是，当黄色的画板刚刚弹出的时候内存就瞬间从&lt;code&gt;18MB&lt;/code&gt;暴增至&lt;code&gt;114MB&lt;/code&gt;。这一点更加说明第一个原因不是问题所在，因为这时手指还没有进行任何绘制，也就是说不存在任何点与线的对象，那么内存怎么会暴增呢？&lt;/p&gt;
+&lt;p&gt;这时我们要考虑这个画板功能是如何实现的，画板分为两步，第一步记录用户手指的轨迹，这一步会生成大量点的对象（已排除嫌疑）。第二步绘制到视图或者图层上，我们平常使用频繁的绘图方式基本上是&lt;code&gt;Quarz2D&lt;/code&gt;的那套&lt;code&gt;C&lt;/code&gt;语言框架，而绘制代码所在的地点在哪呢？我们今天的主角终于上场了－－&lt;code&gt;drawRect&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;下面我们来看一段画板功能绘制的代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)drawRect:(&lt;span class=&quot;built_in&quot;&gt;CGRect&lt;/span&gt;)rect
+{
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.paths&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.count&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt;;
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (BHBPaintPath *path &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.paths&lt;/span&gt;) {
+        CGContextSaveGState(ctx);
+        [[&lt;span class=&quot;built_in&quot;&gt;UIColor&lt;/span&gt; blackColor] set];
+        [path stroke]; &lt;span class=&quot;comment&quot;&gt;//关键的一步绘制&lt;/span&gt;
+        CGContextRestoreGState(ctx);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;去掉绘图上下文栈和其余判断边界的代码，我们只是在当前&lt;code&gt;view&lt;/code&gt;上绘制了&lt;code&gt;n&lt;/code&gt;条黑色的线。看起来普普通通的绘图方式，怎么会导致内存的剧增呢？我们现在说罪魁祸首是&lt;code&gt;drawRect&lt;/code&gt;证据并不充分。我们回想画板刚弹出时的内存状况，接下来我们注释掉&lt;code&gt;drawRect&lt;/code&gt;所有的代码。运行的效果图如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/drawRect1.gif&quot; alt=&quot;效果图1&quot;&gt;&lt;/p&gt;
+&lt;p&gt;效果立竿见影，&lt;strong&gt;注释掉&lt;code&gt;drawRect&lt;/code&gt;之后，内存立刻恢复正常，我们终于抓到了消耗内存的恶鬼，问题就出在对&lt;code&gt;drawRect&lt;/code&gt;方法的覆盖。&lt;/strong&gt;那么抓到了犯人，本文是否应该完结了？非也非也，我们虽说知道了内存暴增的原因，但是我们并没有深入的去分析&lt;code&gt;drawRect&lt;/code&gt;为什么对内存的影响这么大，而且我们也没有给出问题的解决方案。请接着往下看。&lt;/p&gt;
+&lt;p&gt;那么现在我们分析一下&lt;code&gt;drawRect&lt;/code&gt;导致内存暴增的真正原因：&lt;/p&gt;
+&lt;p&gt;重写&lt;code&gt;drawRect&lt;/code&gt;为何会导致内存大量上涨？&lt;/p&gt;
+&lt;p&gt;要想搞明白这个问题，我们需要撸一撸在&lt;code&gt;iOS&lt;/code&gt;程序上图形显示的原理。在&lt;code&gt;iOS&lt;/code&gt;系统中所有显示的视图都是从基类&lt;code&gt;UIView&lt;/code&gt;继承而来的，同时&lt;code&gt;UIView&lt;/code&gt;负责接收用户交互。&lt;strong&gt;但是实际上你所看到的视图内容，包括图形等，都是由&lt;code&gt;UIView&lt;/code&gt;的一个实例图层属性来绘制和渲染的，那就是&lt;code&gt;CALayer&lt;/code&gt;。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CALayer&lt;/code&gt;类的概念与&lt;code&gt;UIView&lt;/code&gt;非常类似，它也具有树形的层级关系，并且可以包含图片文本、背景色等。它与&lt;code&gt;UIView&lt;/code&gt;最大的不同在于它不能响应用户交互，可以说它根本就不知道响应链的存在，它的API虽然提供了“某点是否在图层范围内的方法”，但是它并不具有响应的能力。&lt;/p&gt;
+&lt;p&gt;在每一个&lt;code&gt;UIView&lt;/code&gt;实例当中，都有一个默认的支持图层，&lt;code&gt;UIView&lt;/code&gt;负责创建并且管理这个图层。实际上&lt;strong&gt;这个&lt;code&gt;CALayer&lt;/code&gt;图层才是真正用来在屏幕上显示的&lt;/strong&gt;，&lt;code&gt;UIView&lt;/code&gt;仅仅是对它的一层封装，实现了&lt;code&gt;CALayer&lt;/code&gt;的&lt;code&gt;delegate&lt;/code&gt;，提供了处理事件交互的具体功能，还有动画底层方法的高级API。&lt;/p&gt;
+&lt;p&gt;可以说&lt;code&gt;CALayer&lt;/code&gt;是&lt;code&gt;UIView&lt;/code&gt;的内部实现细节。&lt;/p&gt;
+&lt;p&gt;脑补了这么多，它与今天的主题&lt;code&gt;drawRect&lt;/code&gt;有何关系呢？别着急，我们既然已经确定&lt;code&gt;CALayer&lt;/code&gt;才是最终显示到屏幕上的，只要顺藤摸瓜，即可分析清楚。&lt;code&gt;CALayer&lt;/code&gt;其实也只是&lt;code&gt;iOS&lt;/code&gt;当中一个普通的类，它也并不能直接渲染到屏幕上，因为屏幕上你所看到的东西，其实都是一张张图片。而为什么我们能看到&lt;code&gt;CALayer&lt;/code&gt;的内容呢，是因为&lt;code&gt;CALayer&lt;/code&gt;内部有一个&lt;code&gt;contents&lt;/code&gt;属性。&lt;code&gt;contents&lt;/code&gt;默认可以传一个&lt;code&gt;id&lt;/code&gt;类型的对象，但是只有你传&lt;code&gt;CGImage&lt;/code&gt;的时候，它才能够正常显示在屏幕上。&lt;strong&gt;所以最终我们的图形渲染落点落在&lt;code&gt;contents&lt;/code&gt;身上&lt;/strong&gt;如图。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/drawRect3.001.png&quot; alt=&quot;效果图2&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;contents&lt;/code&gt;也被称为寄宿图，除了给它赋值&lt;code&gt;CGImage&lt;/code&gt;之外，我们也可以直接对它进行绘制，绘制的方法正是这次问题的关键，通过继承&lt;code&gt;UIView&lt;/code&gt;并实现&lt;code&gt;-drawRect:&lt;/code&gt;方法即可自定义绘制。&lt;code&gt;-drawRect:&lt;/code&gt; 方法没有默认的实现，因为对&lt;code&gt;UIView&lt;/code&gt;来说，寄宿图并不是必须的，&lt;code&gt;UIView&lt;/code&gt;不关心绘制的内容。如果&lt;code&gt;UIView&lt;/code&gt;检测到&lt;code&gt;-drawRect:&lt;/code&gt;方法被调用了，它就会为视图分配一个寄宿图，这个寄宿图的像素尺寸等于视图大小乘以&lt;code&gt;contentsScale&lt;/code&gt;(这个属性与屏幕分辨率有关，我们的画板程序在不同模拟器下呈现的内存用量不同也是因为它)的值。&lt;/p&gt;
+&lt;p&gt;那么回到我们的画板程序，当画板从屏幕上出现的时候，因为重写了&lt;code&gt;-drawRect:&lt;/code&gt;方法，&lt;code&gt;-drawRect :&lt;/code&gt;方法就会自动调用。&lt;strong&gt;生成一张寄宿图&lt;/strong&gt;后，方法里面的代码利用&lt;code&gt;Core Graphics&lt;/code&gt;去绘制n条黑色的线，然后内容就会缓存起来，等待下次你调用&lt;code&gt;-setNeedsDisplay&lt;/code&gt;时再进行更新。&lt;/p&gt;
+&lt;p&gt;画板视图的&lt;code&gt;-drawRect:&lt;/code&gt;方法的背后实际上都是底层的&lt;code&gt;CALayer&lt;/code&gt;进行了重绘和保存中间产生的图片，&lt;code&gt;CALayer&lt;/code&gt;的&lt;code&gt;delegate&lt;/code&gt;属性默认实现了&lt;code&gt;CALayerDelegate&lt;/code&gt;协议，当它需要内容信息的时候会调用协议中的方法来拿。当画板视图重绘时，因为它的支持图层&lt;code&gt;CALayer&lt;/code&gt;的代理就是画板视图本身，所以支持图层会请求画板视图给它一个寄宿图来显示，它此刻会调用：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;(void)&lt;/span&gt;displayLayer:&lt;span class=&quot;comment&quot;&gt;(CALayer *)&lt;/span&gt;layer;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果画板视图实现了这个方法，就可以拿到&lt;code&gt;layer&lt;/code&gt;来直接设置&lt;code&gt;contents&lt;/code&gt;寄宿图，如果这个方法没有实现，支持图层&lt;code&gt;CALayer&lt;/code&gt;会尝试调用：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;pp&quot;&gt;- &lt;span class=&quot;params&quot;&gt;(void)&lt;/span&gt;drawLayer:&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;variable&quot;&gt;CALayer&lt;/span&gt; *)&lt;/span&gt;layer inContext:&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;variable&quot;&gt;CGContextRef&lt;/span&gt;)&lt;/span&gt;ctx;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这个方法调用之前，&lt;code&gt;CALayer&lt;/code&gt;创建了一个合适尺寸的空寄宿图（尺寸由&lt;code&gt;bounds&lt;/code&gt;和&lt;code&gt;contentsScale&lt;/code&gt;决定）和一个&lt;code&gt;Core Graphics&lt;/code&gt;的绘制上下文环境，为绘制寄宿图做准备，它作为&lt;code&gt;ctx&lt;/code&gt;参数传入。在这一步生成的空寄宿图内存是相当巨大的，它就是本次内存问题的关键，一旦你实现了&lt;code&gt;CALayerDelegate&lt;/code&gt;协议中的&lt;code&gt;-drawLayer:inContext:&lt;/code&gt;方法或者&lt;code&gt;UIView&lt;/code&gt;中的&lt;code&gt;-drawRect:&lt;/code&gt;方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的内存可从这个公式得出：&lt;code&gt;图层宽&lt;/code&gt;*&lt;code&gt;图层高&lt;/code&gt;*&lt;code&gt;4字节&lt;/code&gt;，宽高的单位均为像素。而我们的画板程序因为要支持像猿题库一样两指挪动的效果，我们开辟的画板大小为：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;_myDrawer = [[BHBMyDrawer alloc] initWithFrame:CGRectMake(0, 0, SCREEN_SIZE.width&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;5, SCREEN_SIZE.height&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;2)];
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我们的画板程序的画板视图它在&lt;code&gt;iPhone6s plus&lt;/code&gt;机器上的上下文内存量就是 &lt;code&gt;1920*2&lt;/code&gt;*&lt;code&gt;1080*5&lt;/code&gt;*&lt;code&gt;4字节&lt;/code&gt;，&lt;strong&gt;相当于&lt;code&gt;79MB&lt;/code&gt;内存&lt;/strong&gt;，图层每次重绘的时候都需要重新抹掉内存然后重新分配。它就是我们画板程序内存暴增的真正原因。&lt;/p&gt;
+&lt;p&gt;最终我们将内存暴增的原因找出来了，那么我们有没有合理的解决方案呢？&lt;/p&gt;
+&lt;p&gt;我认为最合理的办法处理类似于画板这样画线条的需求直接用专有图层&lt;code&gt;CAShapeLayer&lt;/code&gt;。让我们看看它是什么：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CAShapeLayer&lt;/code&gt;是一个通过矢量图形而不是&lt;code&gt;bitmap&lt;/code&gt;来绘制的图层子类。用&lt;code&gt;CGPath&lt;/code&gt;来定义想要绘制的图形，&lt;code&gt;CAShapeLayer&lt;/code&gt;会自动渲染。它可以完美替代我们的直接使用&lt;code&gt;Core Graphics&lt;/code&gt;绘制&lt;code&gt;layer&lt;/code&gt;，对比之下使用&lt;code&gt;CAShapeLayer&lt;/code&gt;有以下优点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;渲染快速。CAShapeLayer使用了硬件加速，绘制同一图形会比用Core Graphics快很多。&lt;/li&gt;
+&lt;li&gt;高效使用内存。一个CAShapeLayer不需要像普通CALayer一样创建一个寄宿图形，所以无论有多大，都不会占用太多的内存。&lt;/li&gt;
+&lt;li&gt;不会被图层边界剪裁掉。&lt;/li&gt;
+&lt;li&gt;不会出现像素化。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;所以最终我们的画板程序使用&lt;code&gt;CAShapeLayer&lt;/code&gt;来实现线条的绘制，性能非常稳定，效果图如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/drawRect4.gif&quot; alt=&quot;效果图3&quot;&gt;&lt;/p&gt;
+&lt;p&gt;总结一下绘制性能优化原则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1.绘制图形性能的优化最好的办法就是不去绘制。&lt;/li&gt;
+&lt;li&gt;2.利用专有图层代替绘图需求。&lt;/li&gt;
+&lt;li&gt;3.不得不用到绘图尽量缩小视图面积，并且尽量降低重绘频率。&lt;/li&gt;
+&lt;li&gt;4.异步绘制，推测内容，提前在其他线程绘制图片，在主线程中直接设置图片。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本文最后一个效果图为仿写猿题库练题画板功能，&lt;code&gt;demo&lt;/code&gt;请在&lt;code&gt;github&lt;/code&gt;搜索&lt;code&gt;BHBDrawBoarderDemo&lt;/code&gt;。或者直接&lt;a href=&quot;https://github.com/bb-coder/BHBDrawBoarderDemo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;戳这里&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;好了，就是这么多，文章比较乱，如有纰漏请不吝指出！想看对本文的补充&lt;a href=&quot;http://bihongbo.com/2016/01/11/memoryGhostMore/&quot;&gt;请到这里&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;good luck！&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;p&gt;iOS Core Animation: Advanced Techniques&lt;/p&gt;
+&lt;p&gt;感谢：&lt;/p&gt;
+&lt;p&gt;AttackOnDobby及其翻译团队。&lt;/p&gt;
+&lt;p&gt;－－－－－－－－－－－－－－－&lt;/p&gt;
+&lt;p&gt;版权申明：我已将本文在微信公众平台的发表权「独家代理」给 iOS 开发（iOSDevTips）微信公共帐号。&lt;br&gt;扫码关注「iOS 开发」：&lt;img src=&quot;http://blog.devtang.com/images/weixin-qr.jpg&quot; alt=&quot;二维码&quot;&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;标题有点吓人，但是对于&lt;code&gt;drawRect&lt;/code&gt;的评价倒是一点都不过分。在平日的开发中，随意覆盖&lt;code&gt;drawRect&lt;/code&gt;方法，稍有不慎就会让你的程序内存暴增。下面我们来看一个例子。&lt;/p&gt;
+&lt;p&gt;去年的某天午后，北京的雾霾依旧像现在这样醇厚，我的同事辉哥像往常一样与我楼下约烟。我见辉哥表情凝重，便询问究竟。辉哥做了一个画板功能，但是苦于内存问题一直得不到解决。画板功能很简单，就是记录手指触摸的轨迹然后绘制在屏幕上。下面我们来看一张效果图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/drawRect.gif&quot; alt=&quot;效果图&quot;&gt;&lt;/p&gt;
+&lt;p&gt;如图我们看到左侧内存的状况随着手指的绘制逐渐恶化。另外细心的同学可以观察到，点击图中蓝色矩形按钮之后，便会弹出画板，而这时并没有进行任何的手指绘制，内存就突变为&lt;code&gt;114MB&lt;/code&gt;，然后每当手指绘制开始时，内存立即增加到&lt;code&gt;300MB&lt;/code&gt;左右稳定下来。对于正常的&lt;code&gt;iOS App&lt;/code&gt;来讲，这么大的内存消耗是不能容忍的。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一句代码添加新浪弹出框动画.</title>
+    <link href="http://bihongbo.com/2015/08/19/sinaAnimation/"/>
+    <id>http://bihongbo.com/2015/08/19/sinaAnimation/</id>
+    <published>2015-08-19T06:07:33.000Z</published>
+    <updated>2015-12-20T05:00:16.000Z</updated>
+    
+    <content type="html">&lt;p&gt;新浪微博中的“加号按钮”点击后的弹出动画很有意思，每当一个人孤单寂寞冷的时候总会不停的点这个动画，终于忍不住自己撸了一个。废话不多说，直接上效果图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation1.gif&quot; alt=&quot;演示1&quot;&gt;&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;br&gt;首先说一下通过这个动画制作过程给大家分享的技术问题：&lt;br&gt;1.背景的毛玻璃效果&lt;br&gt;2.弹性动画&lt;br&gt;3.动画进行时对用户交互的处理&lt;br&gt;4.&lt;code&gt;UIControl&lt;/code&gt; 的 &lt;code&gt;event&lt;/code&gt; 类型&lt;/p&gt;
+&lt;h1 id=&quot;一、背景的毛玻璃效果&quot;&gt;一、背景的毛玻璃效果&lt;/h1&gt;&lt;p&gt;对新浪微博中弹出动画背景的思路分析：&lt;/p&gt;
+&lt;p&gt;  新浪的背景动画效果是有一个透明渐变的过程，并且最终渐变停止之后显示的是一个带有毛玻璃（半透明模糊）效果的视图。我的模仿思路是当准备要弹出动画的时候对整个视图进行截屏操作，将截屏后的图片进行毛玻璃效果渲染，然后在视图上加一个背景 &lt;code&gt;UIImageView&lt;/code&gt; 来显示这张图片，然后通过 &lt;code&gt;alpha&lt;/code&gt; 动画来由透明逐渐渐变出来。&lt;/p&gt;
+&lt;h2 id=&quot;1-对视图进行截屏：&quot;&gt;1.对视图进行截屏：&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;UIGraphics BeginImageContextWithOptions(&lt;span class=&quot;keyword&quot;&gt;size&lt;/span&gt;, NO, &lt;span class=&quot;keyword&quot;&gt;scale&lt;/span&gt;);
+[view.layer renderInContext:UIGraphicsGetCurrentContext()];
+UIImage * &lt;span class=&quot;keyword&quot;&gt;image&lt;/span&gt; = UIGraphicsGetImageFromCurrentImageContext();
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&quot;2-截屏后加上毛玻璃效果：&quot;&gt;2.截屏后加上毛玻璃效果：&lt;/h2&gt;&lt;p&gt;制作毛玻璃效果有三种选择，一是 &lt;code&gt;iOS8&lt;/code&gt; 后推出的 &lt;code&gt;UIBlurEffect&lt;/code&gt; 和 &lt;code&gt;UIVisualEffectView&lt;/code&gt; 来直接显示一个带有毛玻璃效果的 &lt;code&gt;View&lt;/code&gt; 不过这种方式并不能直接生成一张带有毛玻璃效果的图片，而且它的模糊程度设置方法非常有限只有那几个枚举类型，无法满足需求。&lt;/p&gt;
+&lt;p&gt;第二种是通过 &lt;code&gt;CoreImage&lt;/code&gt; 添加滤镜的方式来实现毛玻璃效果，不过这种方式有个缺点如果滤镜使用频繁会对主线程产生影响，如果我不断频繁的重复动画效果就必须要做判断看滤镜是否正在起作用，否则会经常出现崩溃和内存泄漏问题。&lt;/p&gt;
+&lt;p&gt;第三种我们使用苹果13年 &lt;code&gt;WWDC&lt;/code&gt; 上发布的官方 &lt;code&gt;sample&lt;/code&gt; 一个 &lt;code&gt;UIImage&lt;/code&gt; 的分类 &lt;code&gt;UIImage+ImageEffects.h&lt;/code&gt; ,它不但可以制作毛玻璃效果图片，而且可以调整模糊程度和颜色渲染。下面给出代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;image&lt;/span&gt; = [&lt;span class=&quot;keyword&quot;&gt;image&lt;/span&gt; bhb_applyBlurWithRadius:&lt;span class=&quot;number&quot;&gt;15&lt;/span&gt; 
+                             tintColor:tintColor 
+                 saturationDeltaFactor:&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; 
+                             maskImage:nil];&lt;span class=&quot;comment&quot;&gt;//因为OC没有命名空间，避免你的程序中使用到了这个分类导致冲突，我加了前缀&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最终的显示效果很不错，我将模糊程度尽量的调节到与新浪微博一致了，不过在这个过程中，我发现当我频繁的进行弹出操作时，内存会不断攀升如下图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation3.png&quot; alt=&quot;演示3&quot;&gt;&lt;br&gt;内存暴增的原因肯定是因为刚才的截图或者毛玻璃效果导致的，我们来用 &lt;code&gt;Instruments&lt;/code&gt; 的 &lt;code&gt;Allocations&lt;/code&gt; 来进行内存分析，找出元凶。&lt;br&gt;Xcode -&amp;gt; Product -&amp;gt; Profile -&amp;gt; Allocations， 开启之后我们来使用右下角的 &lt;code&gt;Mark generation&lt;/code&gt;（内存快照功能，进一步了解请移步&lt;a href=&quot;http://www.ibm.com/developerworks/cn/mobile/mo-ios-memory/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这片文章&lt;/a&gt;）&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation4.png&quot; alt=&quot;演示4&quot;&gt;&lt;br&gt;在弹出 &lt;code&gt;View&lt;/code&gt; 和移除 &lt;code&gt;View&lt;/code&gt; 的两个时间点加 &lt;code&gt;Mark generation&lt;/code&gt;。&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation5.png&quot; alt=&quot;演示5&quot;&gt;&lt;br&gt;可以观察到，两个时间点竟然相差了4.31M，这是一个相当恐怖的数字，怪不得我点击几次弹出功能之后内存会暴增，让我们继续跟踪：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation6.png&quot; alt=&quot;演示6&quot;&gt;&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation7.png&quot; alt=&quot;演示7&quot;&gt;&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation8.png&quot; alt=&quot;演示8&quot;&gt;&lt;br&gt;跟踪到最后，我们发现大部分未释放的内存来自于绘图和位图的创建，回想我们当初做的截图操作，图片上下文开启后并没有进行关闭操作，所以在程序不断截图的过程中开启了无数的图片上下文而且不会被释放，添加下面这句关键的代码就可以解决问题（NC的我竟然连这个都忘了加-.-）：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;type&quot;&gt;UIGraphicsEndImageContext&lt;/span&gt;&lt;span class=&quot;literal&quot;&gt;()&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&quot;二、弹性动画&quot;&gt;二、弹性动画&lt;/h1&gt;&lt;p&gt;新浪动画中，按钮弹出的动画为弹性效果，按钮到达最终位置后不会直接停止，而是做类似弹簧的一种阻尼运动，要实现这种动画也很简单 &lt;code&gt;iOS7&lt;/code&gt; 后苹果非常给力的添加了 &lt;code&gt;spring&lt;/code&gt; 弹性动画的快速创建方式：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;collection&quot;&gt;[UIView animateWithDuration:&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;NSTimeInterval&lt;/span&gt;)&lt;/span&gt; 
+                      delay:&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;NSTimeInterval&lt;/span&gt;)&lt;/span&gt; 
+     usingSpringWithDamping:&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;CGFloat&lt;/span&gt;)&lt;/span&gt; 
+      initialSpringVelocity:&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;CGFloat&lt;/span&gt;)&lt;/span&gt; 
+                    options:&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;UIViewAnimationOptions&lt;/span&gt;)&lt;/span&gt; 
+                 animations:&lt;span class=&quot;comment&quot;&gt;^{}&lt;/span&gt; 
+                 completion:^&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;BOOL&lt;/span&gt; finished)&lt;/span&gt; &lt;span class=&quot;collection&quot;&gt;{}&lt;/span&gt;]&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过对 &lt;code&gt;Damping&lt;/code&gt; 阻力和 &lt;code&gt;Velocity&lt;/code&gt; 初速度的设置可以实现弹性动画动画效果如下图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/threeballs.gif&quot; alt=&quot;摘自MotionDesign&quot;&gt;&lt;/p&gt;
+&lt;p&gt;当然实现弹性动画还可以使用&lt;a href=&quot;http://www.jwilling.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Jonathan Willing&lt;/a&gt;大大的 &lt;code&gt;JNWSpringAnimation&lt;/code&gt; ,你可以像使用 &lt;code&gt;CABasicAnimation&lt;/code&gt; 一样轻松的使用它，通过改变关键的3个属性 &lt;code&gt;Damping&lt;/code&gt; 阻力， &lt;code&gt;stiffness&lt;/code&gt; 硬直, &lt;code&gt;mass&lt;/code&gt; 质量来改变弹性动画的效果代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;JNWSpringAnimation *&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt; = [JNWSpringAnimation
+animationWithKeyPath:@&lt;span class=&quot;string&quot;&gt;&quot;transform.translation.x&quot;&lt;/span&gt;];
+&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt;.damping = &lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;;
+&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt;.stiffness = &lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;;
+&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt;.mass = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;;
+
+&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt;.fromValue = @(&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;);
+&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt;.toValue = @(&lt;span class=&quot;number&quot;&gt;400&lt;/span&gt;);
+
+[redBall.layer addAnimation:&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt; forKey:&lt;span class=&quot;built_in&quot;&gt;scale&lt;/span&gt;.keyPath];
+redBall.transform = CGAffineTransformMakeTranslation(&lt;span class=&quot;number&quot;&gt;400&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;关键的三个属性对动画的影响如下图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/jnwdemo.gif&quot; alt=&quot;摘自MotionDesign&quot;&gt;&lt;/p&gt;
+&lt;p&gt;为了减轻项目对第三方框架的依赖，我使用了 &lt;code&gt;iOS7&lt;/code&gt; 原生的 &lt;code&gt;spring&lt;/code&gt; 动画，如果你想要兼容以前版本，替换成 &lt;code&gt;JNWSpringAnimation&lt;/code&gt; 即可。回到新浪动画的制作，动画是6个按钮按照顺序依次出现和消失，并且点击 &lt;code&gt;more&lt;/code&gt; 按钮后可以向左平移到第二屏幕，并且在第二屏幕点击 &lt;code&gt;叉号&lt;/code&gt; 按钮动画会加在第二屏幕的6个按钮上。&lt;br&gt;效果如图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation2.gif&quot; alt=&quot;演示2&quot;&gt;&lt;/p&gt;
+&lt;p&gt;对此我使用了一个 &lt;code&gt;UIScrollView&lt;/code&gt; 来承载这些按钮，并声明2个数组用来保存所有的按钮和正在显示的按钮（在屏幕上，并且需要做动画）:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;strong&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; * visableArray;&lt;span class=&quot;comment&quot;&gt;//屏幕显示的按钮数组&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;strong&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; * itemsArray;&lt;span class=&quot;comment&quot;&gt;//所有按钮的数组&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样我在给这些按钮加动画的时候就不会浪费性能，只把动画加在当前显示在屏幕的按钮上。动画依次按照一定的时间差来执行，解决的办法我是用的 &lt;code&gt;GCD&lt;/code&gt; :&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;collection&quot;&gt;[self.visableArray enumerateObjectsUsingBlock:^&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt; obj, NSUInteger idx, BOOL *stop)&lt;/span&gt; &lt;span class=&quot;collection&quot;&gt;{
+    BHBCustomBtn * btn = obj;
+    CGFloat x = btn.frame.origin.x;
+    CGFloat y = btn.frame.origin.y;
+    CGFloat width = btn.frame.size.width;
+    CGFloat height = btn.frame.size.height;
+    btn.frame = CGRectMake&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;x&lt;/span&gt;, &lt;span class=&quot;collection&quot;&gt;[UIScreen mainScreen]&lt;/span&gt;.bounds.size.height + y - self.frame.origin.y, width, height)&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;;&lt;/span&gt;
+    btn.alpha = &lt;span class=&quot;number&quot;&gt;0.0&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;;&lt;/span&gt;
+    dispatch_after&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;dispatch_time&lt;/span&gt;&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;DISPATCH_TIME_NOW&lt;/span&gt;, &lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int64_t&lt;/span&gt;)&lt;/span&gt;&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;idx&lt;/span&gt; * &lt;span class=&quot;number&quot;&gt;0.03&lt;/span&gt; * NSEC_PER_SEC)&lt;/span&gt;)&lt;/span&gt;, dispatch_get_main_queue&lt;span class=&quot;list&quot;&gt;()&lt;/span&gt;, &lt;span class=&quot;comment&quot;&gt;^{
+        [UIView animateWithDuration:0.35 delay:0 usingSpringWithDamping:0.85 initialSpringVelocity:25 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            btn.alpha = 1;
+            btn.frame = CGRectMake(x, y, width, height);
+        }&lt;/span&gt; completion:^&lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;BOOL&lt;/span&gt; finished)&lt;/span&gt; &lt;span class=&quot;collection&quot;&gt;{
+            if &lt;span class=&quot;list&quot;&gt;(&lt;span class=&quot;collection&quot;&gt;[btn isEqual:&lt;span class=&quot;collection&quot;&gt;[self.visableArray lastObject]&lt;/span&gt;]&lt;/span&gt;)&lt;/span&gt; &lt;span class=&quot;collection&quot;&gt;{
+                self.superview.superview.userInteractionEnabled = YES;
+            }&lt;/span&gt;
+        }&lt;/span&gt;]&lt;span class=&quot;comment&quot;&gt;;&lt;/span&gt;
+    })&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;;&lt;/span&gt;
+}&lt;/span&gt;]&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样按钮就会依次以弹性动画的形式弹动出来了，是不是很简单，对于动画结束后所作的处理我将在下一节中说明。&lt;/p&gt;
+&lt;h1 id=&quot;三、动画进行时对用户交互的处理&quot;&gt;三、动画进行时对用户交互的处理&lt;/h1&gt;&lt;p&gt;动画过程中，处理用户交互的问题相当关键，视图动画中默认自动停止响应用户交互，因此当按钮进行弹性动画时，触摸它并不会生成任何事件。&lt;br&gt;但是当你触摸加号按钮的时候，会再次进行弹出框动画，这时就会弹出两个弹出框，这是我们不希望看到的，我们可以将加号按钮的 &lt;code&gt;enable&lt;/code&gt; 属性设置为 &lt;code&gt;YES&lt;/code&gt; 但是这样做我们要在封装的视图内部获取外部的加号按钮，这一点违背了封装性原则，并不是一个好的设计。所以我在所有按钮的弹性动画开始时，设置：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.superview&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.superview&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.userInteractionEnabled&lt;/span&gt; = &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;注意视图的层级关系，我所设计的 &lt;code&gt;BHBPopView&lt;/code&gt; 内部装着一个 &lt;code&gt;UIScrollView&lt;/code&gt;，而它上面放着这些按钮，所以你要找到父视图的父视图才能够统一屏蔽用户的交互行为，当所有的按钮弹性动画结束时，也就是 &lt;code&gt;visableArray&lt;/code&gt; 数组最后一个按钮动画结束时，我们恢复用户的交互：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.superview&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.superview&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.userInteractionEnabled&lt;/span&gt; = &lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样当动画进行过程中，屏蔽了用户的交互，避免发生一些意外的情况。&lt;/p&gt;
+&lt;h1 id=&quot;四、UIControl_的_event_类型&quot;&gt;四、&lt;code&gt;UIControl&lt;/code&gt; 的 &lt;code&gt;event&lt;/code&gt; 类型&lt;/h1&gt;&lt;p&gt;注意到新浪动画里面按钮有一个放大效果，并且当你手指放上去的时候放大，手指稍微挪动，便恢复原始大小。让我们先来看一下动画：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation9.gif&quot; alt=&quot;演示9&quot;&gt;&lt;/p&gt;
+&lt;p&gt;要实现这个效果只需要做一个形变动画就可以了，关键是我们如何控制它放大和恢复大小。&lt;br&gt;思路如下：按钮是继承自 &lt;code&gt;UIControl&lt;/code&gt; ，&lt;code&gt;UIControl&lt;/code&gt; 有不同的事件状态：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchDown&lt;/span&gt;           = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指落在按钮的一瞬间触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchDownRepeat&lt;/span&gt;     = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 多点触碰的时候，当第二根以上的手指触摸瞬间出发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchDragInside&lt;/span&gt;     = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指在视图范围内拖动触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchDragOutside&lt;/span&gt;    = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指在视图范围外拖动触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchDragEnter&lt;/span&gt;      = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指从视图外拖动到视图内时触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchDragExit&lt;/span&gt;       = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指从视图内部拖动到视图外时触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchUpInside&lt;/span&gt;       = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;6&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指在视图内部抬起时触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchUpOutside&lt;/span&gt;      = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 手指在视图外部抬起时触发&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventTouchCancel&lt;/span&gt;         = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt;  &lt;span class=&quot;number&quot;&gt;8&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 取消事件，放上了太多手指或者被上锁或者电话呼叫打断。&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;
+UIControlEventValueChanged&lt;/span&gt;        = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;,      &lt;span class=&quot;comment&quot;&gt;// 当视图的值发生改变时，发送通知。&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;
+UIControlEventEditingDidBegin&lt;/span&gt;     = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;number&quot;&gt;16&lt;/span&gt;,     &lt;span class=&quot;comment&quot;&gt;// UITextField&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventEditingChanged&lt;/span&gt;      = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;number&quot;&gt;17&lt;/span&gt;,
+&lt;span class=&quot;constant&quot;&gt;UIControlEventEditingDidEnd&lt;/span&gt;       = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;number&quot;&gt;18&lt;/span&gt;,
+&lt;span class=&quot;constant&quot;&gt;UIControlEventEditingDidEndOnExit&lt;/span&gt; = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;number&quot;&gt;19&lt;/span&gt;,     &lt;span class=&quot;comment&quot;&gt;// &#39;return key&#39; ending editing&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;
+UIControlEventAllTouchEvents&lt;/span&gt;      = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;x00000FFF,  &lt;span class=&quot;comment&quot;&gt;// for touch events&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventAllEditingEvents&lt;/span&gt;    = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;x000F0000,  &lt;span class=&quot;comment&quot;&gt;// for UITextField&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventApplicationReserved&lt;/span&gt; = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;x0F000000,  &lt;span class=&quot;comment&quot;&gt;// range available for application use&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventSystemReserved&lt;/span&gt;      = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;xF0000000,  &lt;span class=&quot;comment&quot;&gt;// range reserved for internal framework use&lt;/span&gt;
+&lt;span class=&quot;constant&quot;&gt;UIControlEventAllEvents&lt;/span&gt;           = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;xFFFFFFFF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我们所用到的事件是 &lt;code&gt;TouchDown&lt;/code&gt; 和 &lt;code&gt;DragInside&lt;/code&gt;，手指放上去触发 &lt;code&gt;TouchDown&lt;/code&gt; 放大视图，在视图内部移动 &lt;code&gt;DragInside&lt;/code&gt; 时恢复视图，注意按钮的作用范围是整个矩形区域包含了图片和文字，当你的手指移出图片的时候并非一定会移出按钮作用范围，所以依然会触发 &lt;code&gt;TouchUpInsite&lt;/code&gt; 事件，这时候我们需要做一个属性来记录用户拖拽之后取消按钮的 &lt;code&gt;TouchUpInsite&lt;/code&gt; 执行。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;assign&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt; btnCanceled;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样我们就可以实现动画效果了，具体代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;//处理按钮有效的点击事件，当前按钮放大消失，其他按钮缩小消失，回调点击事件&lt;/span&gt;
+[btn &lt;span class=&quot;string&quot;&gt;addTarget:&lt;/span&gt;self &lt;span class=&quot;string&quot;&gt;action:&lt;/span&gt;&lt;span class=&quot;annotation&quot;&gt;@selector&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;didClickBtn:&lt;/span&gt;) &lt;span class=&quot;string&quot;&gt;forControlEvents:&lt;/span&gt;UIControlEventTouchUpInside];
+&lt;span class=&quot;comment&quot;&gt;//处理手指按下事件，放大按钮&lt;/span&gt;
+[btn &lt;span class=&quot;string&quot;&gt;addTarget:&lt;/span&gt;self &lt;span class=&quot;string&quot;&gt;action:&lt;/span&gt;&lt;span class=&quot;annotation&quot;&gt;@selector&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;didTouchBtn:&lt;/span&gt;) &lt;span class=&quot;string&quot;&gt;forControlEvents:&lt;/span&gt;UIControlEventTouchDown];
+&lt;span class=&quot;comment&quot;&gt;//处理手指拖动事件，恢复按钮大小&lt;/span&gt;
+[btn &lt;span class=&quot;string&quot;&gt;addTarget:&lt;/span&gt;self &lt;span class=&quot;string&quot;&gt;action:&lt;/span&gt;&lt;span class=&quot;annotation&quot;&gt;@selector&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;didCancelBtn:&lt;/span&gt;) &lt;span class=&quot;string&quot;&gt;forControlEvents:&lt;/span&gt;UIControlEventTouchDragInside];
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&quot;总结：&quot;&gt;总结：&lt;/h1&gt;&lt;p&gt;制作类似新浪微博这种弹出框动画，我的思路是先分析逻辑，这些特效都由哪些组成，毛玻璃背景，加顶部一个 &lt;code&gt;logo&lt;/code&gt; ，加中间 &lt;code&gt;UIScrollView&lt;/code&gt;和上面的很多按钮,加底部工具条。研究透彻动画的执行顺序，动画执行结果有哪些分支。然后针对特效中的难点，比如毛玻璃，按钮弹性动画等等进行逐一研究攻破，最后将这些组件整合在一起变成一个好玩的动画，最后不要忘了动画的内存和性能测试。这次我模仿的新浪微博动画弹性效果并不是太理想，比起新浪原生来说不是特别一致，也希望有兴趣的你来给我一些建议优化它。最终在你的项目中加入我的弹出框动画真的只需要一句话哦：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  直接显示一个popView在某个view上
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param view       父view&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param imageArray 图标数组&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param titles     标题数组&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param block      回调&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@return pop视图&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;/
++ (BHB_INSTANCETYPE)showToView:(UIView &lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;)view andImages:(NSArray &lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;)imageArray andTitles:(NSArray &lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;)titles andSelectBlock:(DidSelectItemBlock)block;
+/&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  如果显示一个带more功能的，请使用此方法
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param view  父view&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param array BHBItem类型的集合&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@param block 回调&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;@return pop视图&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;/
++ (BHB_INSTANCETYPE)showToView:(UIView &lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;)view withItems:(NSArray &lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;)array andSelectBlock:(DidSelectItemBlock)block;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;hexo出点问题修复到下半夜啊（升级到3.0太蛋疼了），现在脑子晕晕的，明天还要去新公司入职，动画中还有很多细节我不能一一分享了，欢迎大家来搞我的&lt;a href=&quot;https://github.com/bb-coder/BHBPopView&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;good luck!&lt;/p&gt;
+&lt;p&gt;版权声明：我已将本文在微信公众平台的发表权「独家代理」给 iOS开发（ iOSDevTip ） 微信公众号。扫下方二维码即可关注「iOS 开发」：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://images.90159.com/icon/iOSDevTip.jpg&quot; alt=&quot;iOSDevTip&quot;&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;新浪微博中的“加号按钮”点击后的弹出动画很有意思，每当一个人孤单寂寞冷的时候总会不停的点这个动画，终于忍不住自己撸了一个。废话不多说，直接上效果图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/sinaAnimation1.gif&quot; alt=&quot;演示1&quot;&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>copy协议解析</title>
+    <link href="http://bihongbo.com/2015/07/16/copyProtocol/"/>
+    <id>http://bihongbo.com/2015/07/16/copyProtocol/</id>
+    <published>2015-07-16T05:27:04.000Z</published>
+    <updated>2015-12-20T05:00:28.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;copy协议解析&quot;&gt;copy协议解析&lt;/h1&gt;&lt;hr&gt;
+&lt;p&gt;在日常的 &lt;code&gt;iOS&lt;/code&gt; 开发中，我们经常会用到如下代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; * name;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;emsp;&amp;emsp;很多人告诉你只要是 &lt;code&gt;NSString&lt;/code&gt; 类型你就必须给我用 &lt;code&gt;copy&lt;/code&gt; 来声明。但是如果我告诉你很多时候 &lt;code&gt;NSDictionary&lt;/code&gt; 或者 &lt;code&gt;NSArray&lt;/code&gt; 等等也有可能用 &lt;code&gt;copy&lt;/code&gt; 来修饰的话，你是不是会独自混乱一会儿？所以如果你想知道这其中的原理请往下看，如果你只是停留在简单的使用层面，那么请去其他地方看更有意义的事情吧。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;&amp;emsp;&amp;emsp;首先要说的是，使用 &lt;code&gt;copy&lt;/code&gt; 的目的很简单，就是复制一个对象本身，而不是创建一个指向这个对象的指针。那么我们来看看如果上面的代码使用strong会发生什么事情。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;strong&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; * name;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在主函数中我们编写如下代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;NSMutableString * &lt;span class=&quot;keyword&quot;&gt;str&lt;/span&gt; = [NSMutableString stringWithString:@&lt;span class=&quot;string&quot;&gt;&quot;Tom&quot;&lt;/span&gt;];
+
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.name = &lt;span class=&quot;keyword&quot;&gt;str&lt;/span&gt;;
+
+NSLog(@&lt;span class=&quot;string&quot;&gt;&quot;str:%@--self.name:%@&quot;&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;str&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.name);
+
+[&lt;span class=&quot;keyword&quot;&gt;str&lt;/span&gt; appendString:@&lt;span class=&quot;string&quot;&gt;&quot; and jack&quot;&lt;/span&gt;];&lt;span class=&quot;comment&quot;&gt;//追加字符串&lt;/span&gt;
+
+NSLog(@&lt;span class=&quot;string&quot;&gt;&quot;str:%@--self.name:%@&quot;&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;str&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.name);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;emsp;&amp;emsp;请注意这里我不使用 &lt;code&gt;NSString&lt;/code&gt; 而使用 &lt;code&gt;NSMutableString&lt;/code&gt; 是因为像 &lt;code&gt;@“123”&lt;/code&gt; 这样的字符串苹果为了性能考虑都变成了常量，并且使用 &lt;code&gt;NSMutableString&lt;/code&gt; 我可以有效的利用字符串的改变来描述使用 &lt;code&gt;strong&lt;/code&gt; 与 &lt;code&gt;copy&lt;/code&gt; 的不同。&lt;br&gt;&amp;emsp;&amp;emsp;上述代码中，变量 &lt;code&gt;str&lt;/code&gt; 经过追加字符串操作后显然应该变成 &lt;code&gt;@&amp;quot;Tom and jack&amp;quot;&lt;/code&gt; ，让我们来看一下运行结果：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage1.png&quot; alt=&quot;strong运行结果&quot;&gt;&lt;br&gt;&amp;emsp;&amp;emsp;细心的同学可以一下子就发现问题： &lt;code&gt;str&lt;/code&gt; 和 &lt;code&gt;self.name&lt;/code&gt; 竟然输出的是一样的，但是貌似我们并没有改变 &lt;code&gt;self.name&lt;/code&gt; 。这就说明 &lt;code&gt;str&lt;/code&gt; 和 &lt;code&gt;self.name&lt;/code&gt; 指向的是同一块内存地址，这种情况在实际的开发中存在很多隐患。如果我们使用的是 &lt;code&gt;copy&lt;/code&gt; ，输出的结果如下图：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage2.png&quot; alt=&quot;copy运行结果&quot;&gt;&lt;br&gt;&amp;emsp;&amp;emsp;所以当我们需要保证属性是独立复制出来的一个新对象的时候，请使用 &lt;code&gt;copy&lt;/code&gt; ，如果只是简单的指针传递，请使用 &lt;code&gt;strong&lt;/code&gt; 。&lt;br&gt;&amp;emsp;&amp;emsp;直到现在我并没有提及到 &lt;code&gt;copy&lt;/code&gt; 协议的任何东西，不要着急，下面我们来自己定义一个类。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;variable&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;attribute&quot;&gt;Animal &lt;/span&gt;: NSObject
+
+&lt;span class=&quot;variable&quot;&gt;@property&lt;/span&gt; (nonatomic,copy) NSString * name;
+
+&lt;span class=&quot;variable&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;emsp;&amp;emsp;这个类继承自 &lt;code&gt;NSObject&lt;/code&gt; 并仅有一个属性 &lt;code&gt;name&lt;/code&gt; 。这时我们在主控制器中做一个 &lt;code&gt;Animal&lt;/code&gt; 的属性,并且我们希望它是 &lt;code&gt;copy&lt;/code&gt; 的，并编写主函数代码。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@&lt;span class=&quot;keyword&quot;&gt;property&lt;/span&gt; (nonatomic,&lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;) Animal   * dog;
+
+Animal * a1 = [[Animal alloc]init];
+
+a1.&lt;span class=&quot;property&quot;&gt;name&lt;/span&gt; = @&lt;span class=&quot;string&quot;&gt;&quot;Tom&quot;&lt;/span&gt;;
+
+self.dog = a1;
+
+NSLog(@&lt;span class=&quot;string&quot;&gt;&quot;a1Name:%@--self.dogName:%@&quot;&lt;/span&gt;,a1.&lt;span class=&quot;property&quot;&gt;name&lt;/span&gt;,self.dog.&lt;span class=&quot;property&quot;&gt;name&lt;/span&gt;);
+
+a1.&lt;span class=&quot;property&quot;&gt;name&lt;/span&gt; = @&lt;span class=&quot;string&quot;&gt;&quot;Jack&quot;&lt;/span&gt;;
+
+NSLog(@&lt;span class=&quot;string&quot;&gt;&quot;a1Name:%@--self.dogName:%@&quot;&lt;/span&gt;,a1.&lt;span class=&quot;property&quot;&gt;name&lt;/span&gt;,self.dog.&lt;span class=&quot;property&quot;&gt;name&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;emsp;&amp;emsp;让我们直接运行：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage3.png&quot; alt=&quot;自定义类运行结果&quot;&gt;&lt;br&gt;&amp;emsp;&amp;emsp;很不幸，程序崩溃了，崩溃的原因写的很清楚 &lt;code&gt;Animal&lt;/code&gt; 类缺少一个方法 &lt;code&gt;copyWithZone:&lt;/code&gt; ，这个方法就是我们要说的 &lt;code&gt;copy&lt;/code&gt; 协议方法，让我们来看看官方头文件的说明：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;variable&quot;&gt;@protocol&lt;/span&gt; NSCopying
+
+- (id)&lt;span class=&quot;attribute&quot;&gt;copyWithZone&lt;/span&gt;:(NSZone *)zone;
+
+&lt;span class=&quot;variable&quot;&gt;@end&lt;/span&gt;
+
+&lt;span class=&quot;variable&quot;&gt;@protocol&lt;/span&gt; NSMutableCopying
+
+- (id)&lt;span class=&quot;attribute&quot;&gt;mutableCopyWithZone&lt;/span&gt;:(NSZone *)zone;
+
+&lt;span class=&quot;variable&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;遵守 &lt;code&gt;NSCopying&lt;/code&gt; 协议可以使用 &lt;code&gt;[anyObejct copy]&lt;/code&gt; 这样的方法来拷贝一个对象，遵守 &lt;code&gt;NSMutableCopying&lt;/code&gt; 可以使用 &lt;code&gt;[anyObejct mutableCopy]&lt;/code&gt; 来拷贝出一个可变对象。我们暂时先看 &lt;code&gt;NSCopying&lt;/code&gt; 协议，在 &lt;code&gt;Animal&lt;/code&gt; 中我们补充这个协议方法：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Animal&lt;/span&gt; : &lt;span class=&quot;title&quot;&gt;NSObject&lt;/span&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;NSCopying&lt;/span&gt;&amp;gt;&lt;/span&gt;
+
+-(&lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;)copyWithZone:(NSZone *)zone
+{
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; [[[&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; class] allocWithZone:zone] initWithName:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.name&lt;/span&gt;];
+}
+
+-(instancetype)initWithName:(&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *) name
+{
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; = [&lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; init]) {
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.name&lt;/span&gt; = name;
+}
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;再次运行：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage4.png&quot; alt=&quot;正确运行结果&quot;&gt;&lt;br&gt;结果显示正确,这说明系统的很多类如 &lt;code&gt;NSArray&lt;/code&gt; 、 &lt;code&gt;NSDictionary&lt;/code&gt; 、 &lt;code&gt;NSString&lt;/code&gt; 等都默认实现了 &lt;code&gt;copy&lt;/code&gt; 协议，而我们自己定义的类如果想要拷贝功能就必须自己实现它。&lt;/p&gt;
+&lt;p&gt;现在我们来看 &lt;code&gt;NSMutableCopying&lt;/code&gt; 协议，顾名思义我们利用这个协议可以得到一个可变拷贝对象，如果你之前对 &lt;code&gt;NSArray&lt;/code&gt; 与 &lt;code&gt;NSMutableArray&lt;/code&gt; 了如指掌的话我就不用说太多了，直接看代码。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; * testArr;
+
+&lt;span class=&quot;comment&quot;&gt;//主程序中&lt;/span&gt;
+&lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; * arr1 = [[&lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; alloc]init];
+
+[arr1 addObject:&lt;span class=&quot;string&quot;&gt;@&quot;haha&quot;&lt;/span&gt;];
+[arr1 addObject:&lt;span class=&quot;string&quot;&gt;@&quot;nihao&quot;&lt;/span&gt;];
+
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.testArr&lt;/span&gt; = arr1;
+
+&lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@---%@&quot;&lt;/span&gt;,arr1,&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.testArr&lt;/span&gt;);
+
+[arr1 setObject:&lt;span class=&quot;string&quot;&gt;@&quot;hehe&quot;&lt;/span&gt; atIndexedSubscript:&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;];
+
+&lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@---%@&quot;&lt;/span&gt;,arr1,&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.testArr&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;结果如下：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage5.png&quot; alt=&quot;mutableCopy运行结果&quot;&gt;&lt;/p&gt;
+&lt;p&gt;但是当我们改变 &lt;code&gt;self.testArr&lt;/code&gt; 时&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[self.testArr &lt;span class=&quot;string&quot;&gt;setObject:&lt;/span&gt;@&lt;span class=&quot;string&quot;&gt;&quot;123&quot;&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;atIndexedSubscript:&lt;/span&gt;&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;];
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;会得到如下结果：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage6.png&quot; alt=&quot;崩溃结果&quot;&gt;&lt;br&gt;崩溃了，此时我们输出 &lt;code&gt;self.testArr&lt;/code&gt; 看看：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage7.png&quot; alt=&quot;self.testArr类型&quot;&gt;&lt;br&gt;我们从一个 &lt;code&gt;NSMutableArray&lt;/code&gt; 赋值过来的属性竟然是 &lt;code&gt;NSArray&lt;/code&gt; 类型的，那么我们很自然的会想到 &lt;code&gt;NSMutableCopying&lt;/code&gt; 协议，下面我们来重写 &lt;code&gt;self.testArr&lt;/code&gt; 的 &lt;code&gt;setter&lt;/code&gt; 方法。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- (void)&lt;span class=&quot;built_in&quot;&gt;set&lt;/span&gt;TestArr:(NSMutableArray *)&lt;span class=&quot;built_in&quot;&gt;test&lt;/span&gt;Arr
+{
+_&lt;span class=&quot;built_in&quot;&gt;test&lt;/span&gt;Arr = [&lt;span class=&quot;built_in&quot;&gt;test&lt;/span&gt;Arr mutableCopy];
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;再次运行：&lt;br&gt;&lt;img src=&quot;http://7xkdhe.com1.z0.glb.clouddn.com/copyImage8.png&quot; alt=&quot;正确的结果&quot;&gt;&lt;br&gt;程序没有崩溃，并且得到了一个 &lt;code&gt;NSMutableArray&lt;/code&gt; 类型的属性，并成功改变了数组的第一个元素。&lt;/p&gt;
+&lt;p&gt;以上是我对 &lt;code&gt;copy&lt;/code&gt; 协议的一点拙见,代码我就不贴了，大家敲敲练习一下。&lt;/p&gt;
+&lt;p&gt;good luck!&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;copy协议解析&quot;&gt;copy协议解析&lt;/h1&gt;&lt;hr&gt;
+&lt;p&gt;在日常的 &lt;code&gt;iOS&lt;/code&gt; 开发中，我们经常会用到如下代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; * name;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;emsp;&amp;emsp;很多人告诉你只要是 &lt;code&gt;NSString&lt;/code&gt; 类型你就必须给我用 &lt;code&gt;copy&lt;/code&gt; 来声明。但是如果我告诉你很多时候 &lt;code&gt;NSDictionary&lt;/code&gt; 或者 &lt;code&gt;NSArray&lt;/code&gt; 等等也有可能用 &lt;code&gt;copy&lt;/code&gt; 来修饰的话，你是不是会独自混乱一会儿？所以如果你想知道这其中的原理请往下看，如果你只是停留在简单的使用层面，那么请去其他地方看更有意义的事情吧。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swift Section Five(对象与类)</title>
+    <link href="http://bihongbo.com/2014/11/15/swift5/"/>
+    <id>http://bihongbo.com/2014/11/15/swift5/</id>
+    <published>2014-11-15T08:22:03.000Z</published>
+    <updated>2015-08-03T04:58:23.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;对象与类&quot;&gt;对象与类&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;//: Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;type&quot;&gt;UIKit&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//swift 第五课 对象与类&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//1.类的创建方法&lt;/span&gt;
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Shape&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; numberOfSides = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;//属性的声明与变量常量的声明方式一致&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; numberOfBadges = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; id: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt;?
+
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;simpleDescription&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; -&amp;gt;&lt;span class=&quot;title&quot;&gt;String&lt;/span&gt; &lt;/span&gt;{&lt;span class=&quot;comment&quot;&gt;//方法同样一致&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;A shape with &lt;span class=&quot;subst&quot;&gt;\(numberOfSides)&lt;/span&gt; sides.&quot;&lt;/span&gt;
+
+}
+
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;setupShapeId&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(id: Int)&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.id = id
+
+}
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; shape = &lt;span class=&quot;type&quot;&gt;Shape&lt;/span&gt;()
+
+shape.numberOfSides = &lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; description = shape.simpleDescription()
+
+shape.setupShapeId(&lt;span class=&quot;number&quot;&gt;1993&lt;/span&gt;)
+
+&lt;span class=&quot;comment&quot;&gt;//2.类的初始化方法&lt;/span&gt;
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;NamedShape&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; numberOfSides: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt; = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; name: &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;init&lt;/span&gt;(name: &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;){
+
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.name = name
+
+}
+
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;simpleDescription&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; -&amp;gt;&lt;span class=&quot;title&quot;&gt;String&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;A shape with &lt;span class=&quot;subst&quot;&gt;\(numberOfSides)&lt;/span&gt; sides.&quot;&lt;/span&gt;
+
+}
+
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;源代码请前往&lt;a href=&quot;https://github.com/bb-coder/swift_Session&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的github&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;对象与类&quot;&gt;对象与类&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;//: Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;keywo
+    
+    </summary>
+    
+      <category term="swift" scheme="http://bihongbo.com/categories/swift/"/>
+    
+    
+      <category term="swift" scheme="http://bihongbo.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swift Section Four(函数与闭包)</title>
+    <link href="http://bihongbo.com/2014/10/23/swift4/"/>
+    <id>http://bihongbo.com/2014/10/23/swift4/</id>
+    <published>2014-10-23T06:20:01.000Z</published>
+    <updated>2015-08-03T04:55:13.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;函数与闭包&quot;&gt;函数与闭包&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;//: Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;type&quot;&gt;UIKit&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//swift 第四课 函数与闭包&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//1.函数的用法&lt;/span&gt;
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;greet&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(name: String, day: String)&lt;/span&gt; -&amp;gt;&lt;span class=&quot;title&quot;&gt;String&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;Hello &lt;span class=&quot;subst&quot;&gt;\(name)&lt;/span&gt;, today is &lt;span class=&quot;subst&quot;&gt;\(day)&lt;/span&gt;&quot;&lt;/span&gt;
+
+}
+
+greet(&lt;span class=&quot;string&quot;&gt;&quot;Bob&quot;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&quot;Tuesday&quot;&lt;/span&gt;)
+
+
+&lt;span class=&quot;comment&quot;&gt;//2.多返回值的函数&lt;/span&gt;
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;calculateStatistics&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(scores: [Int])&lt;/span&gt; -&amp;gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;built_in&quot;&gt;min&lt;/span&gt;: Int, &lt;span class=&quot;built_in&quot;&gt;max&lt;/span&gt;: Int, sum: Int)&lt;/span&gt;&lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;min&lt;/span&gt; = scores[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;max&lt;/span&gt; = scores[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; sum = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; score &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; scores{
+
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; score &amp;gt; &lt;span class=&quot;built_in&quot;&gt;max&lt;/span&gt; {
+
+&lt;span class=&quot;built_in&quot;&gt;max&lt;/span&gt; = score
+
+}&lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; score &amp;lt; &lt;span class=&quot;built_in&quot;&gt;min&lt;/span&gt;{
+
+&lt;span class=&quot;built_in&quot;&gt;min&lt;/span&gt; = score
+
+}
+
+sum += score
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; (&lt;span class=&quot;built_in&quot;&gt;min&lt;/span&gt;, &lt;span class=&quot;built_in&quot;&gt;max&lt;/span&gt;, sum)
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; statistics = calculateStatistics([&lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;9&lt;/span&gt;])
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(statistics.sum)
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(statistics.&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;)
+
+&lt;span class=&quot;comment&quot;&gt;//3.不限参数个数的函数&lt;/span&gt;
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;sumOf&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(numbers: Int...)&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;Int&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; sum = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; number &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; numbers{
+
+sum += number
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; sum
+
+}
+
+sumOf()
+
+sumOf(&lt;span class=&quot;number&quot;&gt;42&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;597&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;)
+
+&lt;span class=&quot;comment&quot;&gt;//4.嵌套函数&lt;/span&gt;
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;returnFifteen&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; y = &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;
+
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;{
+
+y += &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;
+
+}
+
+add()
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; y
+
+}
+
+returnFifteen()
+
+&lt;span class=&quot;comment&quot;&gt;//5.函数可以作为函数的返回值&lt;/span&gt;
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;makeIncrementer&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; -&amp;gt; &lt;span class=&quot;params&quot;&gt;(Int -&amp;gt; Int)&lt;/span&gt;&lt;/span&gt;{
+
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(number: Int)&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;Int&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; + number
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; addOne
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; increment = makeIncrementer()
+
+increment(&lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;)
+
+&lt;span class=&quot;comment&quot;&gt;//5.函数也可以作为函数的参数&lt;/span&gt;
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;hasAnyMatches&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(list: [Int], condition: Int -&amp;gt; Bool)&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;Bool&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; item &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; list {
+
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; condition(item) {
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;true&lt;/span&gt;
+
+}
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;false&lt;/span&gt;
+
+}
+
+&lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;lessThanTen&lt;/span&gt; &lt;span class=&quot;params&quot;&gt;(number: Int)&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;Bool&lt;/span&gt; &lt;/span&gt;{
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; number &amp;lt; &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;
+
+}
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; numbers = [&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;19&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;]
+
+hasAnyMatches(numbers, lessThanTen)
+
+
+&lt;span class=&quot;comment&quot;&gt;//6.闭包的使用&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//首先介绍一下map方法的定义：返回一个数组，这个数组内的元素是原数组经过闭包函数计算返回的值&lt;/span&gt;
+
+numbers.&lt;span class=&quot;built_in&quot;&gt;map&lt;/span&gt;({
+
+(number: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt;) -&amp;gt; &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; result = &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt; * number
+
+&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; result
+
+})
+
+&lt;span class=&quot;comment&quot;&gt;//简写方式&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; mappedNumbers = numbers.&lt;span class=&quot;built_in&quot;&gt;map&lt;/span&gt;({
+
+number &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt; * number
+
+})
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(mappedNumbers)
+
+&lt;span class=&quot;comment&quot;&gt;//利用闭包排序&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; sortedNumbers = numbers.sorted {
+
+$&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &amp;gt; $&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;
+
+}
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(sortedNumbers)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;源代码请前往&lt;a href=&quot;https://github.com/bb-coder/swift_Session&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的github&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;函数与闭包&quot;&gt;函数与闭包&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;//: Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;key
+    
+    </summary>
+    
+      <category term="swift" scheme="http://bihongbo.com/categories/swift/"/>
+    
+    
+      <category term="swift" scheme="http://bihongbo.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swift Section Three(分支和循环)</title>
+    <link href="http://bihongbo.com/2014/10/20/swift3/"/>
+    <id>http://bihongbo.com/2014/10/20/swift3/</id>
+    <published>2014-10-20T05:11:05.000Z</published>
+    <updated>2015-08-03T04:18:29.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;分支与循环&quot;&gt;分支与循环&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;// Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;type&quot;&gt;UIKit&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//Swift 第三课 分支与循环&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//1.if else 与 for in 循环&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; individualScores = [&lt;span class=&quot;number&quot;&gt;75&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;43&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;103&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;87&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;]
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; teamScore = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; score &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; individualScores {
+
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; score &amp;gt; &lt;span class=&quot;number&quot;&gt;50&lt;/span&gt; {
+
+teamScore += &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;;
+
+} &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
+
+teamScore += &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;;
+
+}
+
+}
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(teamScore)
+
+&lt;span class=&quot;comment&quot;&gt;//2.用&quot;?&quot;来声明可选变量&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; optionalString: &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;? = &lt;span class=&quot;string&quot;&gt;&quot;Hello&quot;&lt;/span&gt;
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(optionalString == &lt;span class=&quot;built_in&quot;&gt;nil&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; optionalName: &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;? = &lt;span class=&quot;string&quot;&gt;&quot;John Appleseed&quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; greeting = &lt;span class=&quot;string&quot;&gt;&quot;Hello!&quot;&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//3.用 if let 来进行快速判断可选变量是否为空&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; name = optionalName {
+
+greeting = &lt;span class=&quot;string&quot;&gt;&quot;Hello, &lt;span class=&quot;subst&quot;&gt;\(name)&lt;/span&gt;&quot;&lt;/span&gt;
+
+}
+
+&lt;span class=&quot;comment&quot;&gt;//print(name) 请记住name并没有声明变量，它只在if let 作用域内有效&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//4.switch用法&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; vegetable = &lt;span class=&quot;string&quot;&gt;&quot;red pepper&quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;switch&lt;/span&gt; vegetable {
+
+&lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;celery&quot;&lt;/span&gt;:
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; vegetableComment = &lt;span class=&quot;string&quot;&gt;&quot;Add some raisins and make ants on a log.&quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;cucumber&quot;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&quot;watercress&quot;&lt;/span&gt;:
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; vegetableComment = &lt;span class=&quot;string&quot;&gt;&quot;That would make a good tea sandwich.&quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;where&lt;/span&gt; x.hasSuffix(&lt;span class=&quot;string&quot;&gt;&quot;pepper&quot;&lt;/span&gt;):
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; vegetableComment = &lt;span class=&quot;string&quot;&gt;&quot;Is it a spicy &lt;span class=&quot;subst&quot;&gt;\(x)&lt;/span&gt;?&quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt;:
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; vegetableComment = &lt;span class=&quot;string&quot;&gt;&quot;Everything tastes good in soup.&quot;&lt;/span&gt;
+
+}
+
+
+&lt;span class=&quot;comment&quot;&gt;//5.利用for in 快速遍历字典&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; interestingNumbers = [
+
+&lt;span class=&quot;string&quot;&gt;&quot;Prime&quot;&lt;/span&gt;: [&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;13&lt;/span&gt;],
+
+&lt;span class=&quot;string&quot;&gt;&quot;Fibonacci&quot;&lt;/span&gt;: [&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;8&lt;/span&gt;],
+
+&lt;span class=&quot;string&quot;&gt;&quot;Square&quot;&lt;/span&gt;: [&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;16&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;25&lt;/span&gt;]
+
+]
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; largest = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (kind, numbers) &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; interestingNumbers{
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; number &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; numbers{
+
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; number &amp;gt; largest {
+
+largest = number
+
+}
+
+}
+
+}
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(largest)
+
+
+&lt;span class=&quot;comment&quot;&gt;//6.while repeat循环&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; n = &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; n &amp;lt; &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;{
+
+n = n * &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;
+
+}
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(n)
+
+
+&lt;span class=&quot;comment&quot;&gt;//var m = 2  //repeat这个语法可能被cut掉了，现在不能使用&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//repeat{&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//    &lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//    m = m * 2&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//    &lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//}while m &amp;lt; 100&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//print(m)&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//6. for 的简便写法&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; firstForLoop = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;..&amp;lt;&lt;span class=&quot;number&quot;&gt;4&lt;/span&gt; {
+
+firstForLoop += i
+
+}
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(firstForLoop)
+
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; secondForLoop = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; i = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;; ++i {
+
+secondForLoop += i
+
+}
+
+&lt;span class=&quot;built_in&quot;&gt;print&lt;/span&gt;(secondForLoop)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;源代码请前往&lt;a href=&quot;https://github.com/bb-coder/swift_Session&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的github&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;分支与循环&quot;&gt;分支与循环&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;// Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;keyw
+    
+    </summary>
+    
+      <category term="swift" scheme="http://bihongbo.com/categories/swift/"/>
+    
+    
+      <category term="swift" scheme="http://bihongbo.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swift Section Two(数组与字典)</title>
+    <link href="http://bihongbo.com/2014/09/15/swift2/"/>
+    <id>http://bihongbo.com/2014/09/15/swift2/</id>
+    <published>2014-09-15T04:30:01.000Z</published>
+    <updated>2015-12-20T05:02:37.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;数组与字典&quot;&gt;数组与字典&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;// Playground - noun: a place where people can play&lt;/span&gt;
+
+import UIKit
+
+&lt;span class=&quot;comment&quot;&gt;//swift 第二课 数组与字典&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//1.数组的声明&lt;/span&gt;
+
+&lt;span class=&quot;tag&quot;&gt;var&lt;/span&gt; shoppingList = [&lt;span class=&quot;string&quot;&gt;&quot;catfish&quot;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&quot;water&quot;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&quot;tulips&quot;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&quot;blue paint&quot;&lt;/span&gt;]
+
+shoppingList[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;] = &lt;span class=&quot;string&quot;&gt;&quot;bottle of water&quot;&lt;/span&gt;
+
+&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(shoppingList)&lt;/span&gt;&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//2.字典的声明&lt;/span&gt;
+
+&lt;span class=&quot;tag&quot;&gt;var&lt;/span&gt; occupations = [&lt;span class=&quot;string&quot;&gt;&quot;Malcolm&quot;&lt;/span&gt;:&lt;span class=&quot;string&quot;&gt;&quot;Captain&quot;&lt;/span&gt;,&lt;span class=&quot;string&quot;&gt;&quot;Kaylee&quot;&lt;/span&gt;:&lt;span class=&quot;string&quot;&gt;&quot;Mechanic&quot;&lt;/span&gt;]
+
+occupations[&lt;span class=&quot;string&quot;&gt;&quot;Jayne&quot;&lt;/span&gt;] = &lt;span class=&quot;string&quot;&gt;&quot;Public Relations&quot;&lt;/span&gt;
+
+&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(occupations)&lt;/span&gt;&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//3.空数组和空字典的声明&lt;/span&gt;
+
+let emptyArray = [String]()
+
+let emptyDictionary = [String : Float]()
+
+&lt;span class=&quot;comment&quot;&gt;//甚至你可以这样清空数组&lt;/span&gt;
+
+shoppingList = []
+
+occupations = [:]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;源代码请前往&lt;a href=&quot;https://github.com/bb-coder/swift_Session&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的github&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;数组与字典&quot;&gt;数组与字典&lt;/h1&gt;&lt;hr&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;// Playground - noun: a place where people can play&lt;/span&gt;
+
+import UIKit
+
+&lt;sp
+    
+    </summary>
+    
+      <category term="swift" scheme="http://bihongbo.com/categories/swift/"/>
+    
+    
+      <category term="swift" scheme="http://bihongbo.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Swift Section One(变量和常量)</title>
+    <link href="http://bihongbo.com/2014/08/17/swift1/"/>
+    <id>http://bihongbo.com/2014/08/17/swift1/</id>
+    <published>2014-08-17T05:27:04.000Z</published>
+    <updated>2015-12-20T05:01:48.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;变量和常量&quot;&gt;变量和常量&lt;/h1&gt;&lt;hr&gt;
+&lt;p&gt;由本文起始，我将持续推出对swift基本语法特性研究的文章，目的是加深自己的理解和记忆，文章以纯代码的形式编写，所有的特点及分析均展示在代码注释中。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;// Playground - noun: a place where people can play&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;type&quot;&gt;UIKit&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//swift 学习第一课 变量与常量&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//1.变量声明&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; myVar = &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;
+
+myVar = &lt;span class=&quot;number&quot;&gt;14&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; myConstant = &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//myConstant = 5 常量不可以改变&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//2.变量的类型确定&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//myVar = 23.5 swift中的类型虽然是自动判断的，不用明确给出，但是一旦给出第一次值类型就确定了&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; implicitInteger = &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//不明确的整型声明方式&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; implicitDouble = &lt;span class=&quot;number&quot;&gt;100.0&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//不明确的双精度类型声明方式&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; expliciDouble: &lt;span class=&quot;type&quot;&gt;Double&lt;/span&gt; = &lt;span class=&quot;number&quot;&gt;100.0&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//确定类型的双精度类型声明方式&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//3.变量类型转换&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; label = &lt;span class=&quot;string&quot;&gt;&quot;The width is &quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; witdh = &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; labelWitdh = label + &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;(witdh)
+
+&lt;span class=&quot;comment&quot;&gt;//变量从第一次赋值开始类型就明确了，转换必须强转&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;//4.字符串中快速插入数值&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; apples = &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; oranges = &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; appleSummary = &lt;span class=&quot;string&quot;&gt;&quot;I have &lt;span class=&quot;subst&quot;&gt;\(apples)&lt;/span&gt; apples.&quot;&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; fruitsSummary = &lt;span class=&quot;string&quot;&gt;&quot;I have &lt;span class=&quot;subst&quot;&gt;\(apples + oranges)&lt;/span&gt; pieces of fruit.&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;源代码请前往&lt;a href=&quot;https://github.com/bb-coder/swift_Session&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的github&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;变量和常量&quot;&gt;变量和常量&lt;/h1&gt;&lt;hr&gt;
+&lt;p&gt;由本文起始，我将持续推出对swift基本语法特性研究的文章，目的是加深自己的理解和记忆，文章以纯代码的形式编写，所有的特点及分析均展示在代码注释中。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="swift" scheme="http://bihongbo.com/categories/swift/"/>
+    
+    
+      <category term="swift" scheme="http://bihongbo.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>swift做时间转换1990年4月15日为nil</title>
+    <link href="http://bihongbo.com/2014/07/25/swiftdatequestion/"/>
+    <id>http://bihongbo.com/2014/07/25/swiftdatequestion/</id>
+    <published>2014-07-25T07:31:29.000Z</published>
+    <updated>2015-12-20T05:01:19.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;先看一段代码：&quot;&gt;先看一段代码：&lt;/h3&gt;&lt;p&gt;swift：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;tag&quot;&gt;var&lt;/span&gt; dateFormatter = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;NSDateFormatter&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;
+
+dateFormatter&lt;span class=&quot;class&quot;&gt;.dateFormat&lt;/span&gt; = &lt;span class=&quot;string&quot;&gt;&quot;yyyy-MM-dd HH:mm:ss&quot;&lt;/span&gt;
+
+let date = dateFormatter.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;dateFromString&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;string&quot;&gt;&quot;1990-04-15 00:00:00&quot;&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;运行上述代码之后你会神奇的发现， &lt;code&gt;date&lt;/code&gt; 竟然是 &lt;code&gt;nil&lt;/code&gt; ，而且 &lt;code&gt;nil&lt;/code&gt; 的情况仅仅发生在1990年4月15日凌晨0点至1点之间。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;经过在群里的激烈讨论，大家去各地翻找资料，最终得出结论如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;因为东八区的夏令时导致&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;实行夏令时的建议最早由窦星元提出。1986年4月，中共中央办公厅和国务院办公厅发出《在全国范围内实行夏令时的通知》，通知动员全国人民为节约能源而早睡早起，并要求全国各部门做好宣传和安排工作。具体作法是：每年从四月中旬第一个星期日的凌晨2时整（北京时间），将时钟拨快一小时，即将表针由2时拨至3时，夏令时开始；到九月中旬第一个星期日的凌晨2时整（北京夏令时间），再将时钟拨慢一小时，即将表针由2时拨至1时，夏令时结束。在夏令时开始和结束前几天，新闻媒体均刊登有关部门的通告。值得注意的是，夏令时中出生的人，生时须减去1小时。在夏令时开始和结束前几天，新闻媒体均刊登有关部门的通告。1992年起，夏令时暂停实行。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;结论：所以在进行时区转换时，在中国，公历1986年至1992年之间4月必有一天少一个小时（例如90年4月15日和87年4月12日），9月份必有一天多一个小时。&quot;&gt;结论：所以在进行时区转换时，在中国，公历1986年至1992年之间4月必有一天少一个小时（例如90年4月15日和87年4月12日），9月份必有一天多一个小时。&lt;/h3&gt;&lt;p&gt;大家以后碰到这种情况导致崩溃最好做下处理哈,另外除了 &lt;code&gt;swift&lt;/code&gt; ， &lt;code&gt;oc&lt;/code&gt; 也是一样的，并且经过网友测试， &lt;code&gt;java&lt;/code&gt; 这个日期会直接跳到凌晨1点01～&lt;br&gt;goodluck！&lt;/p&gt;
+&lt;hr&gt;
+</content>
+    
+    <summary type="html">
+    
+      练习 swift 代码引发的问题
+    
+    </summary>
+    
+      <category term="swift" scheme="http://bihongbo.com/categories/swift/"/>
+    
+    
+      <category term="swift" scheme="http://bihongbo.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>UILabel的文字排版特效，删除线，下划线等</title>
+    <link href="http://bihongbo.com/2014/06/13/UILabelnsmutableattributeStr/"/>
+    <id>http://bihongbo.com/2014/06/13/UILabelnsmutableattributeStr/</id>
+    <published>2014-06-13T07:46:21.000Z</published>
+    <updated>2015-12-20T05:01:40.000Z</updated>
+    
+    <content type="html">&lt;h2 id=&quot;首先要做文字排版的特效，需要用到_iOS_系统自带的一个_Foundation_框架下的_NSMutableAttributeString_-步骤如下：&quot;&gt;首先要做文字排版的特效，需要用到 &lt;code&gt;iOS&lt;/code&gt; 系统自带的一个 &lt;code&gt;Foundation&lt;/code&gt; 框架下的 &lt;code&gt;NSMutableAttributeString&lt;/code&gt; .步骤如下：&lt;/h2&gt;&lt;h3 id=&quot;1-创建属性字串&quot;&gt;1.创建属性字串&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;tag&quot;&gt;var&lt;/span&gt; mAttributeStr:NSMutableAttributedString = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;NSMutableAttributedString&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(string: &lt;span class=&quot;string&quot;&gt;&quot;$¥12345&quot;&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&quot;2-添加属性&quot;&gt;2.添加属性&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName,   &lt;span class=&quot;string&quot;&gt;value:&lt;/span&gt;NSUnderlineStyle.StyleSingle.rawValue, &lt;span class=&quot;string&quot;&gt;range:&lt;/span&gt;     NSRange(&lt;span class=&quot;string&quot;&gt;location:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;length:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;))
+mAttributeStr.addAttribute(NSStrikethroughStyleAttributeName, &lt;span class=&quot;string&quot;&gt;value:&lt;/span&gt;NSUnderlineStyle.StyleNone.rawValue, &lt;span class=&quot;string&quot;&gt;range:&lt;/span&gt; NSRange(&lt;span class=&quot;string&quot;&gt;location:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;length:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&quot;3-赋值给UILabel&quot;&gt;3.赋值给UILabel&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;strikedLabel&lt;span class=&quot;class&quot;&gt;.attributedText&lt;/span&gt; = mAttributeStr
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&quot;简单3步就创建好了字符串的删除线效果，更多效果请参考我的demo-&quot;&gt;简单3步就创建好了字符串的删除线效果，更多效果请参考&lt;a href=&quot;https://github.com/bb-coder/swift_add_strikethrough&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;我的demo&lt;/a&gt;.&lt;/h2&gt;&lt;hr&gt;
+</content>
+    
+    <summary type="html">
+    
+      iOS开发中文字排版的很多常用效果，比如下划线，删除线等...本文所用代码为 swift 版本，OC 同理。
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="UILabel" scheme="http://bihongbo.com/tags/UILabel/"/>
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+      <category term="文字排版" scheme="http://bihongbo.com/tags/%E6%96%87%E5%AD%97%E6%8E%92%E7%89%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>IOS开发中ARC下的assign和weak区别</title>
+    <link href="http://bihongbo.com/2014/05/20/IOSassignandweak/"/>
+    <id>http://bihongbo.com/2014/05/20/IOSassignandweak/</id>
+    <published>2014-05-20T01:55:31.000Z</published>
+    <updated>2015-12-20T05:01:05.000Z</updated>
+    
+    <content type="html">&lt;p&gt;在ARC中的 &lt;code&gt;assign&lt;/code&gt; 和 &lt;code&gt;weak&lt;/code&gt; 可以说非常相像，导致有很多人误以为他们是一摸一样的，在任何时候都可以划等价，但事实却不是这样。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;在群里，有人问，&lt;code&gt;id&lt;/code&gt; 类型的 &lt;code&gt;delegate&lt;/code&gt; 属性到底是用 &lt;code&gt;assign&lt;/code&gt; 还是 &lt;code&gt;weak&lt;/code&gt; &lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;weak&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;&amp;lt;AnyDelegate&amp;gt; delegate;
+&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;assign&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;&amp;lt;AnyDelegate&amp;gt; delegate;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;大家众说纷纭，说都可以的，说 &lt;code&gt;assign&lt;/code&gt; 的，说 &lt;code&gt;weak&lt;/code&gt; 的都有，下面我们来看一本书中的描述：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“The main difference between weak and assign is that the with weak, once the object being pointed to is no longer valid, the pointer is nilled out. Assigning the pointer the value nil avoids many crashes as messages sent to nil are essentially no-ops”&lt;/p&gt;
+&lt;p&gt;Excerpt From: Daniel H Steinberg.&lt;/p&gt;
+&lt;p&gt;“Developing iOS 7 Apps for iPad and iPhone.” Dim Sum Thinking, Inc, 2014. iBooks. iTunes - Books&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;大致的意思是说， &lt;code&gt;weak&lt;/code&gt; 比 &lt;code&gt;assign&lt;/code&gt; 多了一个功能就是当属性所指向的对象消失的时候（也就是内存引用计数为0）会自动赋值为 &lt;code&gt;nil&lt;/code&gt; ，这样再向 &lt;code&gt;weak&lt;/code&gt; 修饰的属性发送消息就不会导致野指针操作crash。&lt;/p&gt;
+&lt;p&gt;可能不太好理解下面我写了一个演示程序。&lt;/p&gt;
+&lt;p&gt;OC：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;//&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//  ViewController.m&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//  weak与assgin的区别&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//  Created by bihongbo on 14/5/20.&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//  Copyright (c) 2015年 毕洪博. All rights reserved.&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;//&lt;/span&gt;
+
+&lt;span class=&quot;preprocessor&quot;&gt;#import &lt;span class=&quot;title&quot;&gt;&quot;ViewController.h&quot;&lt;/span&gt;&lt;/span&gt;
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ViewController&lt;/span&gt; ()&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;weak&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;      weakPoint;
+
+&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;assign&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;    assignPoint;
+
+&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;strong&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;    strongPoint;
+
+&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ViewController&lt;/span&gt;&lt;/span&gt;
+
+- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)viewDidLoad {
+[&lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; viewDidLoad];
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.strongPoint&lt;/span&gt; = [&lt;span class=&quot;built_in&quot;&gt;NSDate&lt;/span&gt; date];
+&lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;strong属性：%@&quot;&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.strongPoint&lt;/span&gt;);
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.weakPoint&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.strongPoint&lt;/span&gt;;
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.assignPoint&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.strongPoint&lt;/span&gt;;
+&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.strongPoint&lt;/span&gt; = &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;;
+&lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;weak属性：%@&quot;&lt;/span&gt;,&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;.weakPoint&lt;/span&gt;);
+&lt;span class=&quot;comment&quot;&gt;//    NSLog(@&quot;assign属性：%@&quot;,self.assignPoint);&lt;/span&gt;
+}
+
+&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;当程序中的注释被打开时，运行程序有可能会崩溃（有时候不崩溃，你可能需要多运行几次），这是因为当 &lt;code&gt;assign&lt;/code&gt; 指针所指向的内存被释放（释放并不等于抹除，只是引用计数为0），不会自动赋值 &lt;code&gt;nil&lt;/code&gt; ，这样再引用 &lt;code&gt;self.assignPoint&lt;/code&gt; 就会导致野指针操作，如果这个操作发生时内存还没有改变内容，依旧可以输出正确的结果，而如果发生时内存内容被改变了，就会crash。&lt;/p&gt;
+&lt;h3 id=&quot;结论：在_ARC_模式下编程时，指针变量一定要用_weak_修饰，只有基本数据类型和结构体需要用_assgin_，例如_delegate_，一定要用_weak_修饰。&quot;&gt;结论：在 &lt;code&gt;ARC&lt;/code&gt; 模式下编程时，指针变量一定要用 &lt;code&gt;weak&lt;/code&gt; 修饰，只有基本数据类型和结构体需要用 &lt;code&gt;assgin&lt;/code&gt; ，例如 &lt;code&gt;delegate&lt;/code&gt; ，一定要用 &lt;code&gt;weak&lt;/code&gt; 修饰。&lt;/h3&gt;&lt;p&gt;goodluck！&lt;/p&gt;
+&lt;hr&gt;
+</content>
+    
+    <summary type="html">
+    
+      自从 iOS 的内存管理出了 ARC 之后，strong 与 weak 横空出世，在某些时候 weak 和 assign 很像但是又有不得不注意的地方。
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>iOS架构分析</title>
+    <link href="http://bihongbo.com/2013/03/20/IOSanysis/"/>
+    <id>http://bihongbo.com/2013/03/20/IOSanysis/</id>
+    <published>2013-03-20T05:29:12.000Z</published>
+    <updated>2015-12-20T05:00:56.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;iOS架构分析&quot;&gt;iOS架构分析&lt;/h1&gt;&lt;hr&gt;
+&lt;p&gt;iOS是Iphone OS的简称，是Iphone、Ipod touch、Ipad等苹果设备的操作系统，它究竟是如何架构起来的呢？我觉得分析好iOS操作系统的架构对写好iOS程序是有很大帮助的，所以下面我会将iOS的系统架构一一述说，如有错误，请帮忙指正。&lt;/p&gt;
+&lt;h2 id=&quot;1-iOS的四层结构：&quot;&gt;1.iOS的四层结构：&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;1.Cocoa Touch 最高层&lt;br&gt;2.Media 多媒体层&lt;br&gt;3.Core Services 服务层&lt;br&gt;4.Core OS 最底层&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;iOS整个系统的架构是由这4层支撑的，由下到上是从底层到高层。下面我会从最低层Core OS层开始逐一细说。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;1-1-Core_OS&quot;&gt;1.1.Core OS&lt;/h3&gt;&lt;p&gt;Core OS这一层包含或者说是提供了整个iPhoneOS的一些基础功能，比如：硬件驱动， 内存管理，程序管理，线程管理（POSIX），文件系统，网络（BSD Socket）,以及标准输入输出等等，所有这些功能都会通过C语言的API来提供。&lt;/p&gt;
+&lt;p&gt;Core OS是用FreeBSD和Mach所改写的Darwin, 是开源、符合POSIX标准的一个Unix核心。&lt;/p&gt;
+&lt;p&gt;iPhone OS提供了许多访问操作系统低层功能的接口集，iPhone 应用通过LibSystem库来访问这些功能，这些接口集如下所示：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;线程（POSIX线程）；&lt;br&gt;网络（BSD sockets）；&lt;br&gt;文件系统访问；&lt;br&gt;标准I/O；&lt;br&gt;Bonjour和DNS服务；&lt;br&gt;现场信息（Locale Information）；&lt;br&gt;内存分配；&lt;br&gt;数学计算。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;许多Core OS技术的头文件位于目录iPhoneSDK/usr/include/，iPhoneSDK是SDK的安装目录。&lt;/p&gt;
+&lt;h3 id=&quot;2-Core_Services:&quot;&gt;2.Core Services:&lt;/h3&gt;&lt;p&gt;Core Services在Core OS基础上提供了更为丰富的功能，它包含了Foundation.Framework和Core Foundation.Framework, 之所以叫Foundation,就是因为它提供了一系列处理字串，排列，组合，日历，时间等等的基本功能。Foundation是属于Objective-C的API，Core Fundation是属于C的API。另外Core servieces还提供了其他的功能，比如：Security, Core Location, SQLite, 和Address Book. 其中Security是用来处理认证，密码管理，安全性管理的； Core Location是用来处理GPS定位的；SQLite是轻量级的数据库，而AddressBook则用来处理电话薄资料的。下面是具体介绍:&lt;br&gt;（1）电话本&lt;/p&gt;
+&lt;p&gt;电话本框架（AddressBook.framework）提供了保存在手机设备中的电话本编程接口。开发者能使用该框架访问和修改存储在用户联系 人数据库里的记录。例如，一个聊天程序可以使用该框架获得可能的联系人列表，启动聊天的进程（Process），并在视图上显示这些联系人信息等。&lt;/p&gt;
+&lt;p&gt;（2）核心基础框架&lt;/p&gt;
+&lt;p&gt;核心基础框架（CoreFoundation.framework）是基于C语言的接口集，提供iPhone应用的基本数据管理和服务功能。该框架 支持如下功能：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Collection数据类型（Arrays、 Sets等）；&lt;br&gt;Bundles；&lt;br&gt;字符串管理；&lt;br&gt;日期和时间管理；&lt;br&gt;原始数据块管理；&lt;br&gt;首选项管理；&lt;br&gt;URL和Stream操作；&lt;br&gt;线程和运行循环（Run Loops）；&lt;br&gt;端口和Socket通信。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;核心基础框架与基础框架是紧密相关的，它们为相同的基本功能提供了Objective-C接口。如果开发者混合使用Foundation Objects 和Core Foundation类型，就能充分利用存在两个框架中的”toll-free bridging”。toll-free bridging意味着开发者能使用这两个框架中的任何一个的核心基础和基础类型，例如Collection和字符串类型等。每个框架中的类和数据类型的 描述注明该对象是否支持toll-free bridged。如果是，它与哪个对象桥接（toll-free bridged）。&lt;/p&gt;
+&lt;p&gt;（3）CFNetwork&lt;/p&gt;
+&lt;p&gt;CFNetwork框架（CFNetwork.framework）是一组高性能的C语言接口集，提供网络协议的面向对象的抽象。开发者可以使用 CFNetwork框架操作协议栈，并且可以访问低层的结构如BSD Sockets等。同时，开发者也能简化与FTP和HTTP服务器的通信，或解析DNS等任务。使用CFNetwork框架实现的任务如下所示：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;BSD Sockets；&lt;br&gt;利用SSL或TLS创建加密连接；&lt;br&gt;解析DNS Hosts；&lt;br&gt;解析HTTP协议，鉴别HTTP和HTTPS服务器；&lt;br&gt;在FTP服务器工作；&lt;br&gt;发布、解析和浏览Bonjour服务。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;（4）核心位置框架（Core Location Framework）&lt;/p&gt;
+&lt;p&gt;核心位置框架（CoreLocation.framework）主要获得手机设备当前的经纬度，核心位置框架利用附近的GPS、蜂窝基站或Wi- Fi信号信息测量用户的当前位置。iPhone地图应用使用这个功能在地图上显示用户的当前位置。开发者能融合这个技术到自己的应用中，给用户提供一些位 置信息服务。例如可以提供一个服务：基于用户的当前位置，查找附近的餐馆、商店或设备等。&lt;/p&gt;
+&lt;p&gt;（5）安全框架（Security Framework）&lt;/p&gt;
+&lt;p&gt;iPhone OS除了内置的安全特性外，还提供了外部安全框架（Security.framework），从而确保应用数据的安全性。该框架提供了管理证书、公钥/私 钥对和信任策略等的接口。它支持产生加密安全的伪随机数，也支持保存在密钥链的证书和密钥。对于用户敏感的数据，它是安全的知识库（Secure Repository）。CommonCrypto接口也支持对称加密、HMAC和数据摘要。在iPhone OS里没有OpenSSL库，但是数据摘要提供的功能在本质上与OpenSSL库提供的功能是一致的。&lt;/p&gt;
+&lt;p&gt;（6）SQLite&lt;/p&gt;
+&lt;p&gt;iPhone应用中可以嵌入一个小型SQL数据库SQLite，而不需要在远端运行另一个数据库服务器。开发者可以创建本地数据库文件，并管理这些 文件中的表格和记录。数据库SQLite为通用的目的而设计，但仍可以优化为快速访问数据库记录。访问数据库SQLite的头文件位于iPhoneSDK/usr/include/sqlite3.h，其中iPhoneSDK是SDK安装的目标路径。&lt;/p&gt;
+&lt;p&gt;（7）支持XML&lt;/p&gt;
+&lt;p&gt;基础框架提供NSXMLParser类，解析XML文档元素。libXML2库提供操作XML内容的功能，这个开放源代码的库可以快速解析和编辑 XML数据，并且转换XML内容到HTML。访问libXML2库的头文件位于目录iPhoneSDK/usr/include /libxml2/，其中iPhoneSDK是SDK安装的目标目录。&lt;/p&gt;
+&lt;h3 id=&quot;3-Media&quot;&gt;3.Media&lt;/h3&gt;&lt;p&gt;如同其名，Media层提供了图片，音乐，影片等多媒体功能。图像分为2D图像和3D图像， 前者由Quartz2D来支持，后者则是用OpenglES.与音乐对应的模组是Core Audio和OpenAL, Media Player 实现了影片的播放， 而最后还提供了Core Animation来对强大动画的支持。具体介绍如下:&lt;/p&gt;
+&lt;p&gt;（1）图像技术（Graphics Technologies）&lt;/p&gt;
+&lt;p&gt;高质量图像是所有iPhone应用的一个重要的组成部分。任何时候，开发者可以采用UIKit框架中已有的视图和功能以及预定义的图像来开发iPhone应用。然而，当UIKit框架中的视图和功能不能满足需求时，开发者可以应用下面描述的技术和方法来制作视图。&lt;br&gt;①Quartz。核心图像框架（CoreGraphics.framework）包含了Quartz 2D画图API，Quartz与在Mac OS中采用的矢量图画引擎是一样先进的。Quartz支持基于路径（Path-based）画图、抗混淆（Anti-aliased）重载、梯度 （Gradients）、图像（Images）、颜色（Colors）、坐标空间转换（Coordinate-space Transformations）、pdf文档创建、显示和解析。虽然API是基于C语言的，它采用基于对象的抽象表征基础画图对象，使得图像内容易于保存和复用。&lt;/p&gt;
+&lt;p&gt;② 核心动画（Core Animation）。Quartz核心框架（QuartzCore.framework）包含CoreAnimation接口，Core Animation是一种高级动画和合成技术，它用优化的重载路径（Rendering Path）实现复杂的动画和虚拟效果。它用一种高层的Objective-C接口配置动画和效果，然后重载在硬件上获得较好的性能。Core Animation集成到iPhone OS 的许多部分，包括UIKit类如UIView，提供许多标准系统行为的动画。开发者也能利用这个框架中的Objective-C接口创建客户化的动画。&lt;/p&gt;
+&lt;p&gt;③ OpenGL ES。OpenGL ES框架（OpenGLES.framework）符合OpenGL ES v1.1规范，它提供了一种绘画2D和3D内容的工具。OpenGL ES 框架是基于Ｃ语言的框架，与硬件设备紧密相关，为全屏游戏类应用提供高帧率（high frame rates）。开发者总是要使用OpenGL框架的EAGL接口，EAGL接口是OpenGL ES框架的一部分，它提供了应用的OpenGL ES画图代码和本地窗口对象的接口。&lt;/p&gt;
+&lt;p&gt;（2）音频技术（Audio Technologies）&lt;/p&gt;
+&lt;p&gt;iPhone OS的音频技术为用户提供了丰富的音频体验。它包括音频回放，高质量的录音和触发设备的振动功能等。iPhone OS的音频技术支持如下音频格式：AAC、Apple Lossless（ALAC）、A-law、IMA/ADPCM（IMA4）、Linear PCM、μ-law和Core Audio等。&lt;/p&gt;
+&lt;p&gt;① 核心音频（Core Audio Family）。核心音频框架家族（Core Audio family of frameworks）提供了音频的本地支持，如表16-1所示。Core Audio是一个基于C语言的接口，并支持立体声（Stereo Audio）。开发能采用iPhone OS 的Core Audio框架在iPhone 应用中产生、录制、混合和播放音频。开发者也能通过核心音频访问手机设备的振动功能。核心音频框架:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;框架（Framework）&lt;br&gt;服务（Service）&lt;br&gt;CoreAudio.framework&lt;br&gt;定义核心音频的音频数据类型&lt;br&gt;AudioUnit.framework&lt;br&gt;提供音频和流媒体文件的&lt;br&gt;回放和录制，并且管理音&lt;br&gt;频文件和播放提示声音&lt;br&gt;AudioToolbox.framework&lt;br&gt;提供使用内置音频单元服务，&lt;br&gt;音频处理模块&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;② OpenAL。iPhone OS 也支持开放音频库（Open Audio Library， OpenAL）。OpenAL是一个跨平台的标准，它能传递位置音频（Positional Audio）。开发者能应用OpenAL在需要位置音频输出的游戏或其他应用中实现高性能、高质量的音频。&lt;br&gt;由于OpenAL是一个跨平台的标准，采用OpenAL的代码模块可以平滑地移植到其他平台。&lt;/p&gt;
+&lt;p&gt;（3）视频技术（Video Technologies）&lt;/p&gt;
+&lt;p&gt;iPhone OS通过媒体播放框架（MediaPlayer.framework）支持全屏视频回放。媒体播放框架支持的视频文件格式包括.mov, .mp4,.m4v和.3gp，并应用如下压缩标准：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;① H.264 Baseline Profile Level 3.0 video，在30 f/s 的情况下分辨率达到640×480像素。注意：不支持B frames；&lt;br&gt;② MPEG4规范的视频部分；&lt;br&gt;③ 众多的音频格式，包含在音频技术的列表里，如AAC、Apple Lossless （ALAC）、A-law、IMA/ADPCM（IMA4）、线性PCM、μ-law和Core Audio等。      &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;4-Cocoa_Touch&quot;&gt;4.Cocoa Touch&lt;/h3&gt;&lt;p&gt;最上面一层是Cocoa Touch，它是Objective-C的API, 其中最核心的部分是UIKit.Framework,应用程序界面上的各种组件，全是由它来提供呈现的，除此之外它还负责处理屏幕上的多点触摸事件，文字的输出，图片,网页的显示，相机或文件的存取，以及加速感应的部分等。具体介绍如下:&lt;br&gt;（1）UIKit框架&lt;/p&gt;
+&lt;p&gt;UIKit框架（UIKit.framework）包含Objective-C程序接口，提供实现图形，事件驱动的iPhone应用的关键架构。 iPhone OS中的每一个应用采用这个框架实现如下核心功能：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;应用管理；&lt;br&gt;支持图形和窗口；&lt;br&gt;支持触摸事件处理；&lt;br&gt;用户接口管理；&lt;br&gt;提供用来表征标准系统视图和控件的对象；&lt;br&gt;支持文本和Web内容；&lt;br&gt;通过URL scheme与其他应用的集成。&lt;br&gt;为提供基础性代码建立应用，UIKit也支持一些与设备相关的特殊功能，如下所示：&lt;br&gt;加速计数据；&lt;br&gt;内建Camera；&lt;br&gt;用户图片库；&lt;br&gt;设备名称和模式信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;（2）基础框架（Foundation Framework）&lt;/p&gt;
+&lt;p&gt;基础框架（Foundation.framework）支持如下功能：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Collection数据类型（包括Arrays、Sets）；&lt;br&gt;Bundles；&lt;br&gt;字符串管理；&lt;br&gt;日期和时间管理；&lt;br&gt;原始数据块管理；&lt;br&gt;首选项管理；&lt;br&gt;线程和循环；&lt;br&gt;URL和Stream处理；&lt;br&gt;Bonjour；&lt;br&gt;通信端口管理；&lt;br&gt;国际化。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;（3）电话本UI框架（Address Book UI Framework）&lt;/p&gt;
+&lt;p&gt;电话本UI框架（AddressBookUI.framework）是一个Objective-C标准程序接口，主要用来创建新联系人，编辑和选择 电话本中存在的联系人。它简化了在iPhone应用中显示联系人信息，并确保所有应用使用相同的程序接口，保证应用在不同平台的一致性。&lt;/p&gt;
+&lt;h2 id=&quot;总结:&quot;&gt;总结:&lt;/h2&gt;&lt;p&gt;当我们要开发iOS程序的时候，首先要先从上层入手，优先使用Objective-C封装后的库，也就是通过 UIKit.framework搭配Foundation.framework来进行开发，而当面对一些比较复杂的功能时，像是多媒体的处理或是绘图，再往下层去找寻相关的framwork开完成。goodluck!&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;FreeBSD: FreeBSD是一种类UNIX操作系统，是由经过BSD、386BSD和4.4BSD发展而来的Unix的一个重要分支。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Mach: Mach是一个由卡内基梅隆大学开发的用于支持操作系统研究的操作系统内核，为了用于操作系统之研究，特别是在分布式与并行运算上。是最早实现微核心操作系统的例子之一，是许多其它相似的项目的标准。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Darwin: Darwin是由苹果电脑于2000年所释出的一个开放原始码操作系统。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;POSIX: POSIX表示可移植操作系统接口（PortableOperatingSystemInterface，缩写为POSIX）。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      iOS是Iphone OS的简称，是Iphone、Ipod touch、Ipad等苹果设备的操作系统，它究竟是如何架构起来的呢？
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://bihongbo.com/categories/iOS/"/>
+    
+    
+      <category term="iOS" scheme="http://bihongbo.com/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mac上搭建github＋hexo的问题</title>
+    <link href="http://bihongbo.com/2013/03/17/githubhexo/"/>
+    <id>http://bihongbo.com/2013/03/17/githubhexo/</id>
+    <published>2013-03-17T08:12:10.000Z</published>
+    <updated>2016-01-08T02:38:33.000Z</updated>
+    
+    <content type="html">&lt;p&gt;经过半天的努力终于搭建好了属于自己的基于github＋hexo的个人博客，拥有了自己的博客心情还是相当激动的。我的搭建过程是参照了[这篇博客][1]。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;在搭建的过程当中遇到了一个非常蛋疼的问题，让我纠结了好久，最后发现这个问题其实就是一个格式的问题。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;问题描述：hexo deploy无效，无任何反应。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;解决方法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;记得_config.yml里面的标签后的“：”后面都有一个空格&lt;/li&gt;
+&lt;li&gt;deploy的type改成git&lt;/li&gt;
+&lt;li&gt;然后运行下npm install hexo-deployer-git —save&lt;/li&gt;
+&lt;li&gt;hexo g&lt;/li&gt;
+&lt;li&gt;hexo d&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;问题得到了完美的解决，赶紧搭建自己的博客吧，骚年们～&lt;br&gt;good luck！&lt;/p&gt;
+&lt;p&gt;[1]: &lt;/p&gt;
+&lt;hr&gt;
+</content>
+    
+    <summary type="html">
+    
+      经过半天的努力终于搭建好了属于自己的基于github＋hexo的个人博客。
+    
+    </summary>
+    
+      <category term="hexo" scheme="http://bihongbo.com/categories/hexo/"/>
+    
+    
+      <category term="hexo" scheme="http://bihongbo.com/tags/hexo/"/>
+    
+  </entry>
+  
+</feed>
